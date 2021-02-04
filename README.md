@@ -51,3 +51,49 @@ Structure: form URL encoded.
 *client_secret: your Client Secret. (REQUIRED if your application has a Client Secret; OMIT in all other cases (i.e. you selected "Android", "iOS", or "Other" as App Type))
 *grant_type: must be set to "refresh_token". (REQUIRED)
 *refresh_token: the user's Refresh Token. (REQUIRED)
+
+
+
+
+## MAL 검색 url 및 파라미터 ##
+
+1. 이름검색
+
+curl 'https://api.myanimelist.net/v2/anime?q=one&limit=4' \
+-H 'Authorization: Bearer YOUR_TOKEN'
+
+
+q	string Search.
+limit	integer Default: 100 (The maximum value is 100.)
+offset	integer Default: 0
+fields	string
+
+2. 랭킹검색
+
+curl 'https://api.myanimelist.net/v2/anime/ranking?ranking_type=all&limit=4' \
+-H 'Authorization: Bearer YOUR_TOKEN'
+
+ranking_type required string 
+
+value  all	Top Anime Series 
+       airing	Top Airing Anime 
+       upcoming	Top Upcoming Anime 
+       tv	Top Anime TV Series
+       ova	Top Anime OVA Series
+       movie	Top Anime Movies
+       special	Top Anime Specials
+       bypopularity	Top Anime by Popularity
+       favorite	Top Favorited Anime
+
+limit	integer Default: 100 (The maximum value is 500.)
+offset	integer Default: 0
+fields	string
+
+3. 디테일 검색
+
+curl 'https://api.myanimelist.net/v2/anime/30230?fields=id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank,popularity,num_list_users,num_scoring_users,nsfw,created_at,updated_at,media_type,status,genres,my_list_status,num_episodes,start_season,broadcast,source,average_episode_duration,rating,pictures,background,related_anime,related_manga,recommendations,studios,statistics' -H 'Authorization: Bearer YOUR_TOKEN'
+
+
+anime_id required integer QUERY PARAMETERS
+fields	string
+

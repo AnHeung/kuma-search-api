@@ -4,9 +4,6 @@ require('dotenv-flow').config({
     silent: true
 });
 
-const {apiPath} = require('./appConstants');
-
-
 const express = require('express')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
@@ -35,5 +32,6 @@ mongoose.connect(process.env.MONGO_URI, {
 
 
 app.use('/google', require('./routes/googles'))
+app.use('/mal', require('./routes/mals'))
 
 app.listen(port, () => console.log(`Server listening on port ${port}`))

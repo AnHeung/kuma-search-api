@@ -1,4 +1,8 @@
-const GoogleSearch = require('../model/googleSearch')
+const GoogleSearch = require('../model/GoogleSearch')
+const MalSearchItem = require('../model/MalSearchItem')
+const MalSearchDetailItem = require('../model/MalSearchDetailItem')
+const MalSearchDetailSimpleItem = require('../model/MalSearchDetailSimpleItem')
+const MalSearchRankingItem = require('../model/MalSearchRankingItem')
 
 const googleSearchParsing = (searchObj, count) => {
     const searchItems = searchObj['items']
@@ -22,7 +26,61 @@ const googleSearchParsing = (searchObj, count) => {
     }
 }
 
+const malSearchParsing = (malItems) => {
+    try {
+        return malItems.map(({ node: { id, title, main_picture: { medium } } }) => new MalSearchItem(id, title, medium))
+    } catch (e) {
+        console.error(`malSearchParsing err: ${e}`)
+        return false
+    }
+}
+
+const malSearchRankingParsing = (malItems, type) => {
+    try {
+        return {
+            type: type,
+            data: malItems.map(({ node: { id, title, main_picture: { medium } }, ranking: { rank } }) => {
+                return new MalSearchRankingItem(id, title, medium, rank)
+            })
+        }
+    } catch (e) {
+        console.error(`malSearchParsing err: ${e}`)
+        return []
+    }
+}
+
+const malSearchDetailParsing = (searchDetailItem, type) => {
+    try {
+        if (searchDetailItem) {
+            const { id, title, main_picture: { medium }, start_date, end_date
+                , status, genres, num_episodes, start_season, related_anime } = searchDetailItem
+
+            if (type === 'all') {
+                const genresName = genres.reduce((acc, { name }) => {
+                    if (!acc) acc = name
+                    else acc += `|${name}`
+                    return acc
+                }, '')
+                const relatedAnimeArr = related_anime.map(({ node: { id, title, main_picture: { medium } } }) => {
+                    return new MalSearchItem(id, title, medium)
+                })
+                return new MalSearchDetailItem(id, title, medium, start_date, end_date, status, genresName, num_episodes, start_season.year, relatedAnimeArr)
+            }
+            return new MalSearchDetailSimpleItem(id, title, medium, start_date)
+        } else {
+            console.log('검색된 아이템이 없습니다.')
+            return false
+        }
+    } catch (err) {
+        console.log(`malSearchDetailParsing err :${err}`)
+        return false
+    }
+}
+
 
 module.exports = {
-    googleSearchParsing: googleSearchParsing
+    googleSearchParsing: googleSearchParsing,
+    malSearchParsing: malSearchParsing,
+    malSearchDetailParsing: malSearchDetailParsing,
+    malSearchRankingParsing: malSearchRankingParsing
 }
