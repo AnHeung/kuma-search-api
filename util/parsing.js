@@ -4,7 +4,7 @@ const MalSearchDetailItem = require('../model/MalSearchDetailItem')
 const MalSearchDetailSimpleItem = require('../model/MalSearchDetailSimpleItem')
 const MalSearchRankingItem = require('../model/MalSearchRankingItem')
 
-const googleSearchParsing = (searchObj, count) => {
+const googleSearchParsing = (searchObj, limit) => {
     const searchItems = searchObj['items']
     if (searchItems) {
         return searchItems.filter(({ title, link, pagemap }) => {
@@ -19,7 +19,7 @@ const googleSearchParsing = (searchObj, count) => {
                 const meta_image = page['metatags'] && page['metatags'].length > 0 ? page['metatags'][0]["og:image"] : ''
                 return new GoogleSearch(title, link, image || meta_image)
             })
-            .splice(0, count || 1)
+            .splice(0, limit || 1)
     } else {
         console.log('검색된 아이템이 없습니다.')
         return false

@@ -6,10 +6,10 @@ router.get('/data', async (req, res) => {
 
     try {
         const query = req.query.q
-        const count = req.query.count
+        const limit = req.query.limit
 
         if (query) {
-            const googleSearchResult = await searchData(query, count)
+            const googleSearchResult = await searchData(query, limit)
             return res.status(200).send(successAndFetchData('구글 검색 성공', googleSearchResult))
         } else {
             console.error('구글 검색 파라미터 입력안됨.')
