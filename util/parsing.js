@@ -1,4 +1,4 @@
-const GoogleSearch = require('../model/GoogleSearch')
+const GoogleSearch = require('../model/googleSearch')
 const MalSearchItem = require('../model/MalSearchItem')
 const MalSearchDetailItem = require('../model/MalSearchDetailItem')
 const MalSearchDetailSimpleItem = require('../model/MalSearchDetailSimpleItem')
