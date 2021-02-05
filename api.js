@@ -33,5 +33,7 @@ mongoose.connect(process.env.MONGO_URI, {
 
 app.use('/google', require('./routes/googles'))
 app.use('/mal', require('./routes/mals'))
+app.use('/tmdb', require('./routes/tmdbs'))
+app.use('/translate', require('./routes/translates'))
 
 app.listen(port, () => console.log(`Server listening on port ${port}`))

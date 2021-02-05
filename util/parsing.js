@@ -39,8 +39,8 @@ const malSearchRankingParsing = (malItems, type) => {
     try {
         return {
             type: type,
-            data: malItems.map(({ node: { id, title, main_picture: { medium } }, ranking: { rank } }) => {
-                return new MalSearchRankingItem(id, title, medium, rank)
+            data: malItems.map(({ node: { id, title, main_picture: { large } }, ranking: { rank } }) => {
+                return new MalSearchRankingItem(id, title, large, rank)
             })
         }
     } catch (e) {
@@ -52,7 +52,7 @@ const malSearchRankingParsing = (malItems, type) => {
 const malSearchDetailParsing = (searchDetailItem, type) => {
     try {
         if (searchDetailItem) {
-            const { id, title, main_picture: { medium }, start_date, end_date
+            const { id, title, main_picture: { large }, start_date, end_date
                 , status, genres, num_episodes, start_season, related_anime } = searchDetailItem
 
             if (type === 'all') {
@@ -61,12 +61,12 @@ const malSearchDetailParsing = (searchDetailItem, type) => {
                     else acc += `|${name}`
                     return acc
                 }, '')
-                const relatedAnimeArr = related_anime.map(({ node: { id, title, main_picture: { medium } } }) => {
-                    return new MalSearchItem(id, title, medium)
+                const relatedAnimeArr = related_anime.map(({ node: { id, title, main_picture: { large } } }) => {
+                    return new MalSearchItem(id, title, large)
                 })
-                return new MalSearchDetailItem(id, title, medium, start_date, end_date, status, genresName, num_episodes, start_season.year, relatedAnimeArr)
+                return new MalSearchDetailItem(id, title, large, start_date, end_date, status, genresName, num_episodes, start_season.year, relatedAnimeArr)
             }
-            return new MalSearchDetailSimpleItem(id, title, medium, start_date)
+            return new MalSearchDetailSimpleItem(id, title, large, start_date)
         } else {
             console.log('검색된 아이템이 없습니다.')
             return false
@@ -77,10 +77,36 @@ const malSearchDetailParsing = (searchDetailItem, type) => {
     }
 }
 
+const tmdbTitleParsing = (tmdbData) => {
+    try {
+        return tmdbData.reduce((acc, { name }) => {
+            if (!acc && name) acc = name
+            return acc
+        }, '')
+    } catch (e) {
+        console.error(`tmdbTitleParsing err: ${e}`)
+        return ''
+    }
+}
+
+const tmdbDetailItemParsing = (tmdbData) => {
+    try {
+        return tmdbData.reduce((acc, { name }) => {
+            if (!acc && name) acc = name
+            return acc
+        }, '')
+    } catch (e) {
+        console.error(`tmdbTitleParsing err: ${e}`)
+        return ''
+    }
+}
+
 
 module.exports = {
     googleSearchParsing: googleSearchParsing,
     malSearchParsing: malSearchParsing,
     malSearchDetailParsing: malSearchDetailParsing,
-    malSearchRankingParsing: malSearchRankingParsing
+    malSearchRankingParsing: malSearchRankingParsing,
+    tmdbTitleParsing: tmdbTitleParsing,
+    tmdbDetailItemParsing: tmdbDetailItemParsing
 }

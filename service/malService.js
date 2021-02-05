@@ -1,6 +1,7 @@
 const Axios = require('axios');
 const { MAL_ACCESS_TOKEN, MAL_CLIENT_ID, MAL_CLIENT_SECRET, MAL_BASE_URL } = require('../appConstants');
 const { malSearchParsing, malSearchDetailParsing, malSearchRankingParsing } = require('../util/parsing');
+const headers = { 'Authorization': `Bearer ${MAL_ACCESS_TOKEN}` }
 
 const searchAnimeItems = async (q, limit) => {
 
@@ -9,7 +10,6 @@ const searchAnimeItems = async (q, limit) => {
         return false
     }
     const params = { q, limit }
-    const headers = { 'Authorization': `Bearer ${MAL_ACCESS_TOKEN}` }
 
     return await Axios.get(MAL_BASE_URL, {
         params,
@@ -31,7 +31,6 @@ const searchAnimeItems = async (q, limit) => {
 const searchAnimeRankingItems = async (ranking_type, limit) => {
 
     const params = { ranking_type, limit }
-    const headers = { 'Authorization': `Bearer ${MAL_ACCESS_TOKEN}` }
 
     return await Axios.get(`${MAL_BASE_URL}/ranking`, {
         params,
@@ -72,7 +71,6 @@ const searchAnimeDetailData = async (id, type) => {
         ? 'id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank,popularity,num_list_users,num_scoring_users,nsfw,created_at,updated_at,media_type,status,genres,my_list_status,num_episodes,start_season,broadcast,source,average_episode_duration,rating,pictures,background,related_anime,related_manga,recommendations,studios,statistics'
         : 'id,title,main_picture,start_date'
 
-    const headers = { 'Authorization': `Bearer ${MAL_ACCESS_TOKEN}` }
     const params = { fields }
 
     return await Axios.get(`${MAL_BASE_URL}/${id}`, {
