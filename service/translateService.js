@@ -1,9 +1,9 @@
 const { searchAnimeItems } = require('./malService');
 const { getTvShowTitle } = require('./tmdbService');
-const ENGLISH ='en-us'
+const Japanese ='jp'
 
 const getAnimeListToEnglish = async (query, limit) => {
-    const languageTitle = await getTvShowTitle(query, ENGLISH)
+    const languageTitle = await getTvShowTitle(query, Japanese)
     const translateList = languageTitle && await searchAnimeItems(languageTitle, limit)
     return translateList
 }

@@ -28,7 +28,10 @@ const googleSearchParsing = (searchObj, limit) => {
 
 const malSearchParsing = (malItems) => {
     try {
-        return malItems.map(({ node: { id, title, main_picture: { medium } } }) => new MalSearchItem(id, title, medium))
+        return malItems.map(({ node: { id, title, main_picture } }) => {
+            const image = (main_picture && main_picture.large) || ''
+            return new MalSearchItem(id, title, image)
+        })
     } catch (e) {
         console.error(`malSearchParsing err: ${e}`)
         return false
