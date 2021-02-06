@@ -1,12 +1,13 @@
 const { searchAnimeItems } = require('./malService');
 const { getTvShowTitle } = require('./tmdbService');
+const ENGLISH ='en-us'
 
-const getAnimeListToTranslate = async (query, language) => {
-    const languageTitle = await getTvShowTitle(query, language)
-    const translateList = languageTitle && await searchAnimeItems(languageTitle)
+const getAnimeListToEnglish = async (query, limit) => {
+    const languageTitle = await getTvShowTitle(query, ENGLISH)
+    const translateList = languageTitle && await searchAnimeItems(languageTitle, limit)
     return translateList
 }
 
 module.exports = {
-    getAnimeListToTranslate: getAnimeListToTranslate
+    getAnimeListToEnglish: getAnimeListToEnglish
 }

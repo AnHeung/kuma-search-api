@@ -6,7 +6,7 @@ const params = { api_key: TMDB_API_KEY, include_adult: true, language: languageK
 
 // https://api.themoviedb.org/3/search/tv?query=%EC%B6%95%EB%B3%B5%EC%9D%84&api_key=c754bdb019b983b0a38b2bf59e2eb10b&page=1&include_adult=false&language=ko
 
-const getTvShowTitle = async (query, language, limit) => {
+const getTvShowTitle = async (query, language) => {
 
     if (!query) {
         console.log(`getTvShowTitle 쿼리 없음.`)

@@ -1,16 +1,15 @@
 const router = require('express').Router();
 const { errMsg, successMsg, successAndFetchData } = require('../util/errorHandle');
-const { getAnimeListToTranslate } = require('../service/translateService')
+const { getAnimeListToEnglish } = require('../service/translateService')
 
 router.get('/title', async (req, res) => {
 
     try {
         const query = req.query.q 
         const limit = req.query.limit || '10'
-        const language = req.query.lang || 'ko'
 
         if (query) {
-            const tmdbResult = await getAnimeListToTranslate(query, language, limit)
+            const tmdbResult = await getAnimeListToEnglish(query,limit)
             return res.status(200).send(successAndFetchData('TMDB 타이틀 검색 성공', tmdbResult))
         } else {
             console.error('TMDB 검색 파라미터 입력안됨.')
