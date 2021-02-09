@@ -44,7 +44,7 @@ const malSearchRankingParsing = (malItems, type) => {
     try {
         return {
             type: type,
-            data: malItems.map(({ node: { id, title, main_picture: { large } }, ranking: { rank } }) => {
+            rank_result: malItems.map(({ node: { id, title, main_picture: { large } }, ranking: { rank } }) => {
                 return new MalSearchRankingItem(id, title, large, rank)
             })
         }
