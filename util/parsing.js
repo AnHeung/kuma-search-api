@@ -2,7 +2,9 @@ const GoogleSearch = require('../model/googleSearch')
 const MalSearchItem = require('../model/MalSearchItem')
 const MalSearchDetailItem = require('../model/MalSearchDetailItem')
 const MalSearchDetailSimpleItem = require('../model/MalSearchDetailSimpleItem')
-const MalSearchRankingItem = require('../model/MalSearchRankingItem')
+const MalSearchRankingItem = require('../model/MalSearchRankingItem');
+const {cleanText} = require('../util/utils')
+
 
 const googleSearchParsing = (searchObj, limit) => {
     const searchItems = searchObj['items']
@@ -52,22 +54,27 @@ const malSearchRankingParsing = (malItems, type) => {
     }
 }
 
-const malSearchDetailParsing = (searchDetailItem, type) => {
+const malSearchDetailParsing = async (searchDetailItem, type) => {
     try {
         if (searchDetailItem) {
-            const { id, title, main_picture: { large }, start_date, end_date
+            
+            //mean 별점수
+            const { id, title, main_picture: { large }, start_date, end_date, mean, popularity, rank, synopsis
                 , status, genres, num_episodes, start_season, related_anime } = searchDetailItem
 
             if (type === 'all') {
                 const genresName = genres.reduce((acc, { name }) => {
                     if (!acc) acc = name
-                    else acc += `|${name}`
+                    else acc += `,${name}`
                     return acc
                 }, '')
                 const relatedAnimeArr = related_anime.map(({ node: { id, title, main_picture: { large } } }) => {
                     return new MalSearchItem(id, title, large)
                 })
-                return new MalSearchDetailItem(id, title, large, start_date, end_date, status, genresName, num_episodes, start_season.year, relatedAnimeArr)
+                const {translateText} = require('../service/translateService')
+                const koreaSynopsis = await translateText('ko', cleanText(synopsis)) || synopsis
+
+                return new MalSearchDetailItem(id, title, large, start_date, end_date, mean, popularity, rank, koreaSynopsis, status, cleanText(genresName), num_episodes, start_season.year, relatedAnimeArr)
             }
             return new MalSearchDetailSimpleItem(id, title, large, start_date)
         } else {
@@ -104,6 +111,16 @@ const tmdbDetailItemParsing = (tmdbData) => {
     }
 }
 
+const translateTextParsing = (resultData) => {
+    try {
+        const resultText = resultData.translatedText
+        return resultText
+    } catch (err) {
+        console.error(`translateTextParsing err: ${e}`)
+        return ''
+    }
+}
+
 
 module.exports = {
     googleSearchParsing: googleSearchParsing,
@@ -111,5 +128,6 @@ module.exports = {
     malSearchDetailParsing: malSearchDetailParsing,
     malSearchRankingParsing: malSearchRankingParsing,
     tmdbTitleParsing: tmdbTitleParsing,
-    tmdbDetailItemParsing: tmdbDetailItemParsing
+    tmdbDetailItemParsing: tmdbDetailItemParsing,
+    translateTextParsing: translateTextParsing  
 }

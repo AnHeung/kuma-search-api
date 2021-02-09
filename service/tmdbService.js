@@ -44,7 +44,7 @@ const getDetailAnimeItems = async (id, language) => {
             // return tmdbDetailItemParsing(tmdbItems)
         })
         .catch(e => {
-            console.error(`searchAnimeRankingItems err : ${e}`)
+            console.error(`getDetailAnimeItems err : ${e}`)
             return []
         })
 }

@@ -97,3 +97,6 @@ curl 'https://api.myanimelist.net/v2/anime/30230?fields=id,title,main_picture,al
 anime_id required integer QUERY PARAMETERS
 fields	string
 
+
+# 네이버 파파고 api 
+참고 : https://developers.naver.com/docs/papago/papago-nmt-api-reference.md

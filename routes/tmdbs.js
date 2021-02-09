@@ -32,7 +32,7 @@ router.get('/title/:id', async (req, res) => {
         if (id) {
             const tmdbDetailResult = await getDetailAnimeItems(id, lang)
             return tmdbDetailResult
-                ? res.status(200).send(successAndFetchData('TMDB 세부 검색 성공.', malSearchResult))
+                ? res.status(200).send(successAndFetchData('TMDB 세부 검색 성공.', tmdbDetailResult))
                 : res.status(404).send(errMsg('TMDB 세부 검색  실패.'))
         } else {
             console.error('TMDB 세부검색 아이디 파라미터 입력안됨.')

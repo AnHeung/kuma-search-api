@@ -6,7 +6,7 @@ const headers = { 'Authorization': `Bearer ${MAL_ACCESS_TOKEN}` }
 const searchAnimeItems = async (q, limit) => {
 
     if (!q) {
-        console.log(`searchMalData 쿼리 없음.`)
+        console.log(`searchAnimeItems 쿼리 없음.`)
         return false
     }
     const params = { q, limit }
@@ -21,7 +21,7 @@ const searchAnimeItems = async (q, limit) => {
             return malSearchParsing(malItems)
         })
         .catch(e => {
-            console.error(`searchImage err : ${e}`)
+            console.error(`searchAnimeItems err : ${e}`)
             return false
         })
 }
@@ -56,7 +56,8 @@ const searchAnimeAllRankingItems = async (limit) => {
     }))
         .then(data => data)
         .catch(e => {
-            console.error(e)
+            console.error(`searchAnimeAllRankingItems ${e}`)
+            return false
         })
 }
 
@@ -77,9 +78,9 @@ const searchAnimeDetailData = async (id, type) => {
         params,
         headers
     })
-        .then(data => malSearchDetailParsing(data.data, type))
+        .then(async (data) =>await malSearchDetailParsing(data.data, type))
         .catch(e => {
-            console.error(`searchImage err : ${e}`)
+            console.error(`searchAnimeDetailData err : ${e}`)
             return false
         })
 }

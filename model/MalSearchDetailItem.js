@@ -5,12 +5,17 @@
 // ,recommendations,studios,statistics
 
 module.exports = function MalSearchDetailItem(id, title, image = '', start_date = '0000', end_date = '0000',
+    star, popularity, rank, synopsis,
     status, genres, num_episodes, start_season = '0000', related_anime = {}) {
     this.id = id
     this.title = title
     this.image = image
     this.start_date = start_date
     this.end_date = end_date
+    this.star = star
+    this.popularity = popularity
+    this.rank = rank
+    this.synopsis = synopsis
     this.status = status
     this.genres = genres
     this.num_episodes = num_episodes

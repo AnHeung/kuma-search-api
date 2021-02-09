@@ -24,7 +24,24 @@ const makeCodeChallenge = () => {
     }
 }
 
+const isEmpty = value => {
+    if (!value || (value != null && typeof value == "object" && !Object.keys(value).length)) {
+        return true
+    } else {
+        return false
+    }
+}
+
+const cleanText = (text)=>{
+    if(isEmpty(text) || !isEmpty(text) && typeof text !== 'string') return ''
+    return text.replace(/([\t|\n])/gi, "").toString().trim()
+}
+
+
+
 module.exports = {
-    makeCodeChallenge:makeCodeChallenge
+    makeCodeChallenge: makeCodeChallenge,
+    cleanText: cleanText,
+    isEmpty:isEmpty
 }
 
