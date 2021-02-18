@@ -76,7 +76,7 @@ const malSearchDetailParsing = async (searchDetailItem, type) => {
                 const {translateText} = require('../service/translateService')
                 const koreaSynopsis = await translateText('ko', cleanText(synopsis)) || synopsis
 
-                return new MalSearchDetailItem(id, title, large, start_date, end_date, star, popularity, rank, koreaSynopsis, status, cleanText(genresName), num_episodes, startSeason, relatedAnimeArr)
+                return new MalSearchDetailItem(id, title, large, start_date, end_date, star, popularity.toString(), rank, koreaSynopsis, status, cleanText(genresName), num_episodes.toString(), startSeason, relatedAnimeArr)
             }
             return new MalSearchDetailSimpleItem(id, title, large, start_date)
         } else {
