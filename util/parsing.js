@@ -61,7 +61,7 @@ const malSearchDetailParsing = async (searchDetailItem, type) => {
             //mean 별점수
             const { id, title, main_picture: { large }, start_date, end_date, mean, popularity, rank, synopsis
                 , status, genres, start_season,num_episodes, related_anime } = searchDetailItem
-            const startSeason = start_season ? start_season.year : start_date                
+            const startSeason = start_season ? start_season.year.toString() : start_date                
             const star = mean ? mean.toString() : "0"
 
             if (type === 'all') {
