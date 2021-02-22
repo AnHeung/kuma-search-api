@@ -59,10 +59,11 @@ const malSearchDetailParsing = async (searchDetailItem, type) => {
         if (searchDetailItem) {
             
             //mean 별점수
-            const { id, title, main_picture: { large }, start_date, end_date, mean, popularity, rank, synopsis
+            const { id, title, main_picture: { large }, pictures,start_date, end_date, mean, popularity, rank, synopsis
                 , status, genres, start_season,num_episodes, related_anime } = searchDetailItem
             const startSeason = start_season ? start_season.year.toString() : start_date                
             const star = mean ? mean.toString() : "0"
+            const pictureArr =  pictures ? pictures.map(img=>img.large) : []
 
             if (type === 'all') {
                 const genresName = genres.reduce((acc, { name }) => {
@@ -76,7 +77,7 @@ const malSearchDetailParsing = async (searchDetailItem, type) => {
                 const {translateText} = require('../service/translateService')
                 const koreaSynopsis = await translateText('ko', cleanText(synopsis)) || synopsis
 
-                return new MalSearchDetailItem(id, title, large, start_date, end_date, star, popularity.toString(), rank, koreaSynopsis, status, cleanText(genresName), num_episodes.toString(), startSeason, relatedAnimeArr)
+                return new MalSearchDetailItem(id, title, large, start_date, end_date, star, popularity.toString(), rank, koreaSynopsis, status, cleanText(genresName), num_episodes.toString(), startSeason, pictureArr,relatedAnimeArr)
             }
             return new MalSearchDetailSimpleItem(id, title, large, start_date)
         } else {
