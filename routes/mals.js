@@ -13,7 +13,7 @@ router.get('/data', async (req, res) => {
             return res.status(200).send(successAndFetchData('MAL 검색 성공', malSearchResult))
         } else {
             console.error('MAL 검색 파라미터 입력안됨.')
-            return res.status(404).send(errMsg('MAL 파라미터 입력 안됨.'))
+            return res.status(200).send(errMsg('MAL 파라미터 입력 안됨.'))
         }
     } catch (e) {
         console.error(`MAL search err: ${e}`)
@@ -32,10 +32,10 @@ router.get('/detail', async (req, res) => {
             const malSearchResult = await searchAnimeDetailData(id, type)
             return malSearchResult
                 ? res.status(200).send(successAndFetchData('MAL 검색 성공.', malSearchResult))
-                : res.status(404).send(errMsg('MAL 검색 실패.'))
+                : res.status(200).send(errMsg('MAL 검색 실패.'))
         } else {
             console.error('MAL 아이디 파라미터 입력안됨.')
-            return res.status(404).send(errMsg('MAL 아이디 파라미터 입력 안됨.'))
+            return res.status(200).send(errMsg('MAL 아이디 파라미터 입력 안됨.'))
         }
     } catch (e) {
         console.error(`MAL search 아이디 err: ${e}`)
@@ -55,7 +55,7 @@ router.get('/ranking', async (req, res) => {
             : await searchAnimeRankingItems(rank_type, limit)
         return malSearchResult
             ? res.status(200).send(successAndFetchData('MAL 랭킹 검색 성공.', malSearchResult))
-            : res.status(404).send(errMsg('MAL 랭킹 검색 실패.'))
+            : res.status(200).send(errMsg('MAL 랭킹 검색 실패.'))
     } catch (e) {
         console.error(`MAL Search Ranking err: ${e}`)
         return res.status(404).send(errMsg(`${e}`))

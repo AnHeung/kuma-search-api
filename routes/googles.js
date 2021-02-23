@@ -13,7 +13,7 @@ router.get('/data', async (req, res) => {
             return res.status(200).send(successAndFetchData('구글 검색 성공', googleSearchResult))
         } else {
             console.error('구글 검색 파라미터 입력안됨.')
-            return res.status(404).send(errMsg('파라미터 입력 안됨.'))
+            return res.status(200).send(errMsg('파라미터 입력 안됨.'))
         }
     } catch (e) {
         console.error(`google search err: ${e}`)
