@@ -32,6 +32,37 @@ const isEmpty = value => {
     }
 }
 
+const getYear = ()=> new Date().getFullYear()
+
+const getSeasonText = ()=>{
+
+    const month = new Date().getMonth();
+    let monthText = "spring";
+    switch(month){
+        case 1 : 
+        case 2 :
+        case 3 :
+            monthText = "winter";
+            break;
+        case 4 :
+        case 5:
+        case 6:
+            monthText = "spring";
+            break;
+        case 7:
+        case 8:
+        case 9:
+            monthText = "summer";
+            break;
+        case 10:
+        case 11:
+        case 12:
+            monthText = "fall";
+            break;
+    }
+    return monthText;
+}
+
 const cleanText = (text)=>{
     if(isEmpty(text) || !isEmpty(text) && typeof text !== 'string') return ''
     return text.replace(/([\t|\n])/gi, "").toString().trim()
@@ -42,6 +73,8 @@ const cleanText = (text)=>{
 module.exports = {
     makeCodeChallenge: makeCodeChallenge,
     cleanText: cleanText,
-    isEmpty:isEmpty
+    isEmpty:isEmpty,
+    getSeasonText:getSeasonText,
+    getYear:getYear
 }
 

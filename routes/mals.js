@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { errMsg, successMsg, successAndFetchData } = require('../util/errorHandle');
-const { searchAnimeItems, searchAnimeDetailData, searchAnimeRankingItems, searchAnimeAllRankingItems } = require('../service/malService')
+const { searchAnimeItems, searchAnimeDetailData, searchAnimeRankingItems, searchAnimeAllRankingItems, searchSeasonItems } = require('../service/malService')
 
 router.get('/data', async (req, res) => {
 
@@ -43,10 +43,28 @@ router.get('/detail', async (req, res) => {
     }
 })
 
+router.get('/season', async (req, res) => {
+
+    try {
+
+        const limit = req.query.limit || 5;
+
+        const seasonItems = await searchSeasonItems(limit);
+        return seasonItems
+            ? res.status(200).send(successAndFetchData('Season Item 검색 성공 ',seasonItems))
+            : res.status(200).send(errMsg('Season Item 검색 실패 '))
+
+    } catch (e) {
+        console.error(`Season Item 검색 실패 ${e}`)
+        return res.status(404).send(errMsg(`Season Item 검색 실패 ${e}`));
+    }
+
+})
+
 router.get('/ranking', async (req, res) => {
 
     try {
-        const search_type = req.query.search_type 
+        const search_type = req.query.search_type
         const limit = req.query.limit || '10'
         const rank_type = req.query.ranking_type || 'all'
 

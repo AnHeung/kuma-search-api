@@ -2,6 +2,7 @@ const Axios = require('axios');
 const { MAL_ACCESS_TOKEN, MAL_CLIENT_ID, MAL_CLIENT_SECRET, MAL_BASE_URL } = require('../appConstants');
 const { malSearchParsing, malSearchDetailParsing, malSearchRankingParsing } = require('../util/parsing');
 const headers = { 'Authorization': `Bearer ${MAL_ACCESS_TOKEN}` }
+const {getSeasonText,getYear} = require('../util/utils');
 
 const searchAnimeItems = async (q, limit) => {
 
@@ -61,6 +62,27 @@ const searchAnimeAllRankingItems = async (limit) => {
         })
 }
 
+const searchSeasonItems = async (limit) => {
+
+    const season =  getSeasonText();
+    const year = getYear();
+    const params = {limit};
+
+    return await Axios.get(`${MAL_BASE_URL}/season/${year}/${season}`, {
+        params,
+        headers
+    })
+        .then(data => {
+            const malSeasonItems = data.data.data
+            if (!malSeasonItems || malSeasonItems && malSeasonItems.length === 0) return false
+            return malSearchParsing(malSeasonItems)
+        })
+        .catch(e => {
+            console.error(`searchSeasonItems err : ${e}`)
+            return []
+        })
+}
+
 
 const searchAnimeDetailData = async (id, type) => {
 
@@ -89,5 +111,6 @@ module.exports = {
     searchAnimeItems: searchAnimeItems,
     searchAnimeDetailData: searchAnimeDetailData,
     searchAnimeRankingItems: searchAnimeRankingItems,
-    searchAnimeAllRankingItems: searchAnimeAllRankingItems
+    searchAnimeAllRankingItems: searchAnimeAllRankingItems,
+    searchSeasonItems:searchSeasonItems
 }
