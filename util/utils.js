@@ -63,6 +63,30 @@ const getSeasonText = ()=>{
     return monthText;
 }
 
+const malTypeToKorea = (type)=>{
+
+    if(isEmpty(type)) return "해당없음";
+
+    switch(type.toLowerCase()){
+        case  'airing' :
+            type = "상영중"
+        break;
+        case  'airing' :
+            type = "극장판"
+        break;
+        case  'ova' :
+            type = type.toUpperCase()
+        case  'tv' :
+            type = type.toUpperCase()
+        break;
+        case  'upcoming' :
+            type = "상영예정"
+        break;
+    }
+    return type;
+}
+
+
 const cleanText = (text)=>{
     if(isEmpty(text) || !isEmpty(text) && typeof text !== 'string') return ''
     return text.replace(/([\t|\n])/gi, "").toString().trim()
@@ -75,6 +99,7 @@ module.exports = {
     cleanText: cleanText,
     isEmpty:isEmpty,
     getSeasonText:getSeasonText,
-    getYear:getYear
+    getYear:getYear,
+    malTypeToKorea:malTypeToKorea
 }
 

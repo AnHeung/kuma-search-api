@@ -3,7 +3,7 @@ const MalSearchItem = require('../model/MalSearchItem')
 const MalSearchDetailItem = require('../model/MalSearchDetailItem')
 const MalSearchDetailSimpleItem = require('../model/MalSearchDetailSimpleItem')
 const MalSearchRankingItem = require('../model/MalSearchRankingItem');
-const {cleanText} = require('../util/utils')
+const {cleanText,malTypeToKorea} = require('../util/utils')
 
 
 const googleSearchParsing = (searchObj, limit) => {
@@ -44,6 +44,7 @@ const malSearchRankingParsing = (malItems, type) => {
     try {
         return {
             type: type,
+            koreaType:malTypeToKorea(type),
             rank_result: malItems.map(({ node: { id, title, main_picture: { large } }, ranking: { rank } }) => {
                 return new MalSearchRankingItem(id, title, large, rank)
             })
