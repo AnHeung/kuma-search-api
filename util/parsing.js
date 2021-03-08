@@ -71,8 +71,9 @@ const malSearchDetailParsing = async (searchDetailItem, type) => {
                     else acc += `,${name}`
                     return acc
                 }, '')
-                const relatedAnimeArr = related_anime.map(({ node: { id, title, main_picture: { large } } }) => {
-                    return new MalSearchItem(id, title, large)
+                const relatedAnimeArr = related_anime.map(({ node: { id, title, main_picture } }) => {
+                    const image = main_picture ? main_picture.large : undefined;
+                    return new MalSearchItem(id, title, image)
                 })
                 const {translateText} = require('../service/translateService')
                 const koreaSynopsis = await translateText('ko', cleanText(synopsis)) || synopsis
