@@ -71,7 +71,7 @@ const malTypeToKorea = (type)=>{
         case  'airing' :
             type = "상영중"
         break;
-        case  'airing' :
+        case  'movie' :
             type = "극장판"
         break;
         case  'ova' :
