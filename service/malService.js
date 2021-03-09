@@ -44,7 +44,7 @@ const searchAnimeRankingItems = async (ranking_type, limit) => {
         })
         .catch(e => {
             console.error(`searchAnimeRankingItems err : ${e}`)
-            return []
+            return false
         })
 }
 
@@ -79,7 +79,7 @@ const searchSeasonItems = async (limit) => {
         })
         .catch(e => {
             console.error(`searchSeasonItems err : ${e}`)
-            return []
+            return false
         })
 }
 

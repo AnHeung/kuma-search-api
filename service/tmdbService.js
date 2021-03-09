@@ -45,7 +45,7 @@ const getDetailAnimeItems = async (id, language) => {
         })
         .catch(e => {
             console.error(`getDetailAnimeItems err : ${e}`)
-            return []
+            return false
         })
 }
 
