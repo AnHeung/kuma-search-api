@@ -55,7 +55,7 @@ const searchAnimeAllRankingItems = async (limit) => {
     return Promise.all(typeArr.map(type => {
         return searchAnimeRankingItems(type, limit)
     }))
-        .then(data => data)
+        .then(result=>result.filter(data=>data))
         .catch(e => {
             console.error(`searchAnimeAllRankingItems ${e}`)
             return false

@@ -71,7 +71,7 @@ router.get('/ranking', async (req, res) => {
         const malSearchResult = search_type === 'all' ?
             await searchAnimeAllRankingItems(limit)
             : await searchAnimeRankingItems(rank_type, limit)
-        return malSearchResult
+        return (malSearchResult && malSearchResult.length > 0)
             ? res.status(200).send(successAndFetchData('MAL 랭킹 검색 성공.', malSearchResult))
             : res.status(200).send(errMsg('MAL 랭킹 검색 실패.'))
     } catch (e) {
