@@ -48,9 +48,10 @@ const searchAnimeRankingItems = async (ranking_type, limit) => {
         })
 }
 
-const searchAnimeAllRankingItems = async (limit) => {
-
-    const typeArr = ['airing', 'upcoming', 'movie','ova' ,'tv']
+const searchAnimeAllRankingItems = async (rankType , limit) => {
+    
+    const typeArr = (!rankType || (rankType && rankType === 'all')) ? ['airing','upcoming','movie','ova','tv'] : rankType.split(',');
+    console.log(` typeArr ${typeArr} : rankType :${rankType}`);
 
     return Promise.all(typeArr.map(type => {
         return searchAnimeRankingItems(type, limit)

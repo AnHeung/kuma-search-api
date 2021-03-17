@@ -51,7 +51,7 @@ const malSearchRankingParsing = (malItems, type) => {
         }
     } catch (e) {
         console.error(`malSearchParsing err: ${e}`)
-        return []
+        return false
     }
 }
 
