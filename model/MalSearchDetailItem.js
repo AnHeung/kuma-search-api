@@ -6,7 +6,7 @@
 
 module.exports = function MalSearchDetailItem(id, title, image = '', start_date = '0000', end_date = '0000',
     star, popularity, rank, synopsis,
-    status, genres, num_episodes, start_season = '0000', pictures=[] ,related_anime = {}) {
+    status, genres, num_episodes, start_season = '0000', pictures=[] ,related_anime = {} , recommendations={},studios ={}) {
     this.id = id
     this.title = title
     this.image = image
@@ -22,4 +22,6 @@ module.exports = function MalSearchDetailItem(id, title, image = '', start_date 
     this.start_season = start_season
     this.pictures = pictures
     this.related_anime = related_anime
+    this.recommendations = recommendations
+    this.studios = studios
 }
