@@ -37,19 +37,19 @@ const getYear = ()=> new Date().getFullYear()
 const getScheduleText =  (day)=>{
 
     switch(day){
-        case 1: 
+        case '1': 
         return  "monday"
-        case 2: 
-        return "tuesday"
-        case 3: 
+        case '2': 
+        return "tuesday"    
+        case '3': 
         return "wednesday"
-        case 4: 
+        case '4': 
         return "thursday"
-        case 5: 
+        case '5': 
         return "friday"
-        case 6: 
+        case '6': 
         return  "saturday"
-        case 0: 
+        case '0': 
         return "sunday"
     }
     return "monday";
