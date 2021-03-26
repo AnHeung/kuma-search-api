@@ -1,8 +1,8 @@
 const Axios = require('axios');
-const { MAL_ACCESS_TOKEN, MAL_CLIENT_ID, MAL_CLIENT_SECRET, MAL_BASE_URL } = require('../appConstants');
-const { malSearchParsing, malSearchDetailParsing, malSearchRankingParsing } = require('../util/parsing');
+const { MAL_ACCESS_TOKEN, MAL_CLIENT_ID, MAL_CLIENT_SECRET, MAL_BASE_URL, MAL_JIKAN_URL } = require('../appConstants');
+const { malSearchParsing, malSearchDetailParsing, malSearchRankingParsing, malScheduleParsing ,malGenreParsing} = require('../util/parsing');
 const headers = { 'Authorization': `Bearer ${MAL_ACCESS_TOKEN}` }
-const {getSeasonText,getYear} = require('../util/utils');
+const { getSeasonText, getYear, getScheduleText } = require('../util/utils');
 
 const searchAnimeItems = async (q, limit) => {
 
@@ -48,26 +48,56 @@ const searchAnimeRankingItems = async (ranking_type, limit) => {
         })
 }
 
-const searchAnimeAllRankingItems = async (rankType , limit) => {
-    
-    const typeArr = (!rankType || (rankType && rankType === 'all')) ? ['airing','upcoming','movie','ova','tv'] : rankType.split(',');
+const searchAnimeAllRankingItems = async (rankType, limit) => {
+
+    const typeArr = (!rankType || (rankType && rankType === 'all')) ? ['airing', 'upcoming', 'movie', 'ova', 'tv'] : rankType.split(',');
     console.log(` typeArr ${typeArr} : rankType :${rankType}`);
 
     return Promise.all(typeArr.map(type => {
         return searchAnimeRankingItems(type, limit)
     }))
-        .then(result=>result.filter(data=>data))
+        .then(result => result.filter(data => data))
         .catch(e => {
             console.error(`searchAnimeAllRankingItems ${e}`)
             return false
         })
 }
 
+const searchScheduleItems = async (day) => {
+
+    const schedule = getScheduleText(day);
+
+    return Axios.get(`${MAL_JIKAN_URL}/schedule/${schedule}`)
+        .then(data => {
+            const malSchedulItems = data.data[schedule];
+            if (!malSchedulItems || malSchedulItems && malSchedulItems.length === 0) return false;
+            return malScheduleParsing(malSchedulItems);
+        })
+        .catch(e => {
+            console.error(e);
+            return false;
+        })
+}
+
+const searchGenreItems = async (type, id, page) => {
+
+    return Axios.get(`${MAL_JIKAN_URL}/genre/${type}/${id}/${page}`)
+        .then(data => {
+            const genreItems = data.data[type];
+            if(!genreItems || genreItems && genreItems.length === 0 )return false;
+            return malGenreParsing(genreItems);
+        })
+        .catch(e => {
+            console.error(e);
+            return false;
+        })
+}
+
 const searchSeasonItems = async (limit) => {
 
-    const season =  getSeasonText();
+    const season = getSeasonText();
     const year = getYear();
-    const params = {limit};
+    const params = { limit };
 
     return await Axios.get(`${MAL_BASE_URL}/season/${year}/${season}`, {
         params,
@@ -101,7 +131,7 @@ const searchAnimeDetailData = async (id, type) => {
         params,
         headers
     })
-        .then(async (data) =>await malSearchDetailParsing(data.data, type))
+        .then(async (data) => await malSearchDetailParsing(data.data, type))
         .catch(e => {
             console.error(`searchAnimeDetailData err : ${e}`)
             return false
@@ -113,5 +143,7 @@ module.exports = {
     searchAnimeDetailData: searchAnimeDetailData,
     searchAnimeRankingItems: searchAnimeRankingItems,
     searchAnimeAllRankingItems: searchAnimeAllRankingItems,
-    searchSeasonItems:searchSeasonItems
+    searchSeasonItems: searchSeasonItems,
+    searchScheduleItems: searchScheduleItems,
+    searchGenreItems:searchGenreItems
 }

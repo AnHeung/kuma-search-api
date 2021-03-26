@@ -3,7 +3,9 @@ const MalSearchItem = require('../model/MalSearchItem')
 const MalSearchDetailItem = require('../model/MalSearchDetailItem')
 const MalSearchDetailSimpleItem = require('../model/MalSearchDetailSimpleItem')
 const MalSearchRankingItem = require('../model/MalSearchRankingItem');
-const {cleanText,malTypeToKorea} = require('../util/utils')
+const {cleanText,malTypeToKorea} = require('../util/utils');
+const MalSearchScheduleItem = require('../model/MalSearchScheduleItem');
+const MalSearchGenreItem = require('../model/MalSearchGenreItem');
 
 
 const googleSearchParsing = (searchObj, limit) => {
@@ -25,6 +27,32 @@ const googleSearchParsing = (searchObj, limit) => {
     } else {
         console.log('검색된 아이템이 없습니다.')
         return false
+    }
+}
+
+const malScheduleParsing = (malItems)=>{
+    try {
+        return malItems.map(({mal_id , title,image_url,score, airing_start})=>{
+          return new MalSearchScheduleItem(mal_id, title, image_url , score,airing_start);
+        })
+    } catch (e) {
+        console.error(`malScheduleParsing error ${e}`);
+        return false;
+    }
+}
+
+
+const malGenreParsing = (malItems)=>{
+    try {
+        return malItems.map(({mal_id , title,image_url,score,episodes, airing_start ,genres})=>{
+            const genreArr = genres.map(({mal_id, name})=>{
+                return {genre_id : mal_id,genre_name :name};
+            });
+            return new MalSearchGenreItem(mal_id , title ,image_url , score, episodes , airing_start , genreArr);
+        })
+    } catch (e) {
+        console.error(`malScheduleParsing error ${e}`);
+        return false;
     }
 }
 
@@ -143,5 +171,7 @@ module.exports = {
     malSearchRankingParsing: malSearchRankingParsing,
     tmdbTitleParsing: tmdbTitleParsing,
     tmdbDetailItemParsing: tmdbDetailItemParsing,
-    translateTextParsing: translateTextParsing  
+    translateTextParsing: translateTextParsing  ,
+    malScheduleParsing:malScheduleParsing,
+    malGenreParsing:malGenreParsing
 }

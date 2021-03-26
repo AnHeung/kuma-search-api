@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { errMsg, successMsg, successAndFetchData } = require('../util/errorHandle');
-const { searchAnimeItems, searchAnimeDetailData, searchAnimeAllRankingItems, searchSeasonItems } = require('../service/malService')
+const { searchAnimeItems, searchAnimeDetailData, searchAnimeAllRankingItems, searchSeasonItems, searchScheduleItems, searchGenreItems } = require('../service/malService')
 
 router.get('/data', async (req, res) => {
 
@@ -51,12 +51,49 @@ router.get('/season', async (req, res) => {
 
         const seasonItems = await searchSeasonItems(limit);
         return seasonItems
-            ? res.status(200).send(successAndFetchData('Season Item 검색 성공 ',seasonItems))
+            ? res.status(200).send(successAndFetchData('Season Item 검색 성공 ', seasonItems))
             : res.status(200).send(errMsg('Season Item 검색 실패 '))
 
     } catch (e) {
         console.error(`Season Item 검색 실패 ${e}`)
         return res.status(404).send(errMsg(`Season Item 검색 실패 ${e}`));
+    }
+
+})
+
+router.get('/schedule/:day', async (req, res) => {
+
+    try {
+        const day = req.params.day
+
+        const scheduleItem = await searchScheduleItems(day);
+
+        return scheduleItem
+            ? res.status(200).send(successAndFetchData('schedule item 검색 성공', scheduleItem))
+            : res.status(200).send(errMsg('schedule item 검색 실패'));
+
+    } catch (e) {
+        console.error(`schedule Item 검색 실패 ${e}`)
+        return res.status(404).send(errMsg(`schedule Item 검색 실패 ${e}`));
+    }
+
+})
+
+router.get('/genre/:type/:id/:page', async (req, res) => {
+    try {
+
+        const type = req.params.type || 'anime';
+        const id = req.params.id || "1";
+        const page = req.params.page || "1";
+
+        const genreItems = await searchGenreItems(type, id, page);
+
+        return genreItems
+            ? res.status(200).send(successAndFetchData('genre Item 검색 성공',genreItems))
+            : res.status(200).send(errMsg('genre Item 검색 실패'));
+    } catch (e) {
+        console.error(`genre Item 검색 실패 ${e}`)
+        return res.status(404).send(errMsg(`genre Item 검색 실패 ${e}`));
     }
 
 })
