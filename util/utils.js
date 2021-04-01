@@ -107,6 +107,15 @@ const malTypeToKorea = (type)=>{
     return type;
 }
 
+const getToday = ()=>{
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = ("0" + (1 + date.getMonth())).slice(-2);
+    const day = ("0" + date.getDate()).slice(-2);
+
+    return year + "-" + month + "-" + day;
+}
+
 
 const cleanText = (text)=>{
     if(isEmpty(text) || !isEmpty(text) && typeof text !== 'string') return ''
@@ -122,6 +131,7 @@ module.exports = {
     getSeasonText:getSeasonText,
     getYear:getYear,
     malTypeToKorea:malTypeToKorea,
-    getScheduleText:getScheduleText
+    getScheduleText:getScheduleText,
+    getToday:getToday
 }
 

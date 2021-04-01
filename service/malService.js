@@ -2,7 +2,7 @@ const Axios = require('axios');
 const { MAL_ACCESS_TOKEN, MAL_CLIENT_ID, MAL_CLIENT_SECRET, MAL_BASE_URL, MAL_JIKAN_URL } = require('../appConstants');
 const { malSearchParsing, malSearchDetailParsing, malSearchRankingParsing, malScheduleParsing ,malGenreParsing} = require('../util/parsing');
 const headers = { 'Authorization': `Bearer ${MAL_ACCESS_TOKEN}` }
-const { getSeasonText, getYear, getScheduleText } = require('../util/utils');
+const { getSeasonText, getYear, getScheduleText, getToday } = require('../util/utils');
 
 const searchAnimeItems = async (q, limit) => {
 
@@ -25,6 +25,21 @@ const searchAnimeItems = async (q, limit) => {
             console.error(`searchAnimeItems err : ${e}`)
             return false
         })
+}
+
+const searchAllItems = async(type,q,page,status , rated, genre ,score , startDate ,endDate, genre_exclude , limit , sort)=>{
+
+    const start_date = startDate || "2000-01-01"
+    const end_date = endDate  || getToday()
+
+    const params = {q,page,status,rated,genre,score, start_date,end_date,genre_exclude,limit,sort}
+
+    return await Axios.get(`${MAL_JIKAN_URL}/search/${type || "anime"}`,{params})
+    .then(data=>data.data)  
+    .catch(e=>{
+        console.error(`searchAllItems 실패 :${e}`)
+        return false;
+    })
 }
 
 
@@ -145,5 +160,6 @@ module.exports = {
     searchAnimeAllRankingItems: searchAnimeAllRankingItems,
     searchSeasonItems: searchSeasonItems,
     searchScheduleItems: searchScheduleItems,
-    searchGenreItems:searchGenreItems
+    searchGenreItems:searchGenreItems,
+    searchAllItems:searchAllItems
 }

@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { errMsg, successMsg, successAndFetchData } = require('../util/errorHandle');
-const { searchAnimeItems, searchAnimeDetailData, searchAnimeAllRankingItems, searchSeasonItems, searchScheduleItems, searchGenreItems } = require('../service/malService')
+const { searchAllItems, searchAnimeItems, searchAnimeDetailData, searchAnimeAllRankingItems, searchSeasonItems, searchScheduleItems, searchGenreItems } = require('../service/malService')
 
 router.get('/data', async (req, res) => {
 
@@ -42,6 +42,128 @@ router.get('/detail', async (req, res) => {
         return res.status(404).send(errMsg(`${e}`))
     }
 })
+
+
+/**
+ *  
+ * 
+ * 타입 type
+ Anime Types	Manga Types
+    tv	            manga
+    ova	            novel
+    movie	        oneshot
+    special	        doujin
+    ona	            manhwa
+    music	        manhua
+
+Anime Status	        Manga Status
+    airing	             publishing
+    completed	         completed
+  complete (alias)	     complete (alias)
+    to_be_aired	         to_be_published
+     tba (alias)	     tbp (alias)
+  upcoming (alias)	   upcoming (alias)
+
+rate
+
+g	G - All Ages
+pg	PG - Children
+pg13	PG-13 - Teens 13 or older
+r17	R - 17+ recommended (violence & profanity)
+r	R+ - Mild Nudity (may also contain violence & profanity)
+rx	Rx - Hentai (extreme sexual content/nudity)
+
+sort
+Anime & Manga Sort
+ascending
+asc (alias)
+descending
+desc (alias)
+
+
+genre
+Anime Genre	Manga Genre
+Action: 1	Action: 1
+Adventure: 2	Adventure: 2
+Cars: 3	Cars: 3
+Comedy: 4	Comedy: 4
+Dementia: 5	Dementia: 5
+Demons: 6	Demons: 6
+Mystery: 7	Mystery: 7
+Drama: 8	Drama: 8
+Ecchi: 9	Ecchi: 9
+Fantasy: 10	Fantasy: 10
+Game: 11	Game: 11
+Hentai: 12	Hentai: 12
+Historical: 13	Historical: 13
+Horror: 14	Horror: 14
+Kids: 15	Kids: 15
+Magic: 16	Magic: 16
+Martial Arts: 17	Martial Arts: 17
+Mecha: 18	Mecha: 18
+Music: 19	Music: 19
+Parody: 20	Parody: 20
+Samurai: 21	Samurai: 21
+Romance: 22	Romance: 22
+School: 23	School: 23
+Sci Fi: 24	Sci Fi: 24
+Shoujo: 25	Shoujo: 25
+Shoujo Ai: 26	Shoujo Ai: 26
+Shounen: 27	Shounen: 27
+Shounen Ai: 28	Shounen Ai: 28
+Space: 29	Space: 29
+Sports: 30	Sports: 30
+Super Power: 31	Super Power: 31
+Vampire: 32	Vampire: 32
+Yaoi: 33	Yaoi: 33
+Yuri: 34	Yuri: 34
+Harem: 35	Harem: 35
+Slice Of Life: 36	Slice Of Life: 36
+Supernatural: 37	Supernatural: 37
+Military: 38	Military: 38
+Police: 39	Police: 39
+Psychological: 40	Psychological: 40
+Thriller: 41	Seinen: 41
+Seinen: 42	Josei: 42
+Josei: 43	Doujinshi: 43
+Gender Bender: 44
+Thriller: 45
+
+start_date , end_date format yyyy-mm-dd
+
+genre_exclue =>  0 exclude/ 1 include 
+
+ */
+router.get('/all', async (req, res) => {
+
+    try {
+
+        const type = req.query.type
+        const q = req.query.q
+        const page = req.query.page || "1"
+        const status = req.query.status
+        const rated = req.query.rated
+        const genre = req.query.genre
+        const score = req.query.score
+        const startDate = req.query.start_date 
+        const endDate = req.query.end_date
+        const genre_exclude = req.query.genre_exclude
+        const limit = req.query.limit
+        const sort = req.query.sort
+        
+        const allResult =  await searchAllItems(type,q,page,status,rated,genre, score, startDate,endDate, genre_exclude, limit,sort);
+
+        return allResult 
+             ? res.status(200).send(successAndFetchData('모든 데이터 전송 성공' , allResult))
+             : res.status(200).send(errMsg('모든 데이터 전송 실패'));
+
+    } catch (e) {
+        console.error(`MAL search All err: ${e}`)
+        return res.status(404).send(errMsg(`${e}`))
+    }
+
+})
+
 
 router.get('/season', async (req, res) => {
 
@@ -89,7 +211,7 @@ router.get('/genre/:type/:id/:page', async (req, res) => {
         const genreItems = await searchGenreItems(type, id, page);
 
         return genreItems
-            ? res.status(200).send(successAndFetchData('genre Item 검색 성공',genreItems))
+            ? res.status(200).send(successAndFetchData('genre Item 검색 성공', genreItems))
             : res.status(200).send(errMsg('genre Item 검색 실패'));
     } catch (e) {
         console.error(`genre Item 검색 실패 ${e}`)
