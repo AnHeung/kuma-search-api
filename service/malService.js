@@ -35,7 +35,7 @@ const searchAllItems = async(type,q,page,status , rated, genre ,score , startDat
     const params = {q,page,status,rated,genre,score, start_date,end_date,genre_exclude,limit,sort}
 
     return await Axios.get(`${MAL_JIKAN_URL}/search/${type || "anime"}`,{params})
-    .then(data=>data.data)  
+    .then(data=>data.data.results)  
     .catch(e=>{
         console.error(`searchAllItems 실패 :${e}`)
         return false;
