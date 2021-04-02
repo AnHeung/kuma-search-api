@@ -137,19 +137,18 @@ genre_exclue =>  0 exclude/ 1 include
 router.get('/all', async (req, res) => {
 
     try {
-
-        const type = req.query.type
-        const q = req.query.q
+        const type = req.query.type || "anime"
+        const q = req.query.q || undefined
         const page = req.query.page || "1"
-        const status = req.query.status
-        const rated = req.query.rated
-        const genre = req.query.genre
-        const score = req.query.score
-        const startDate = req.query.start_date 
-        const endDate = req.query.end_date
-        const genre_exclude = req.query.genre_exclude
-        const limit = req.query.limit
-        const sort = req.query.sort
+        const status = req.query.status || undefined
+        const rated = req.query.rated || undefined
+        const genre = req.query.genre || undefined
+        const score = req.query.score || undefined
+        const startDate = req.query.start_date || undefined
+        const endDate = req.query.end_date || undefined
+        const genre_exclude = req.query.genre_exclude || undefined
+        const limit = req.query.limit || undefined
+        const sort = req.query.sort || undefined
         
         const allResult =  await searchAllItems(type,q,page,status,rated,genre, score, startDate,endDate, genre_exclude, limit,sort);
 
