@@ -31,8 +31,9 @@ const searchAllItems = async(type,q,page,status , rated, genre ,score , startDat
 
     const start_date = startDate || "2000-01-01"
     const end_date = endDate  || getToday()
+    const order_by = "end_date"
 
-    const params = {q,page,status,rated,genre,score, start_date,end_date,genre_exclude,limit,sort}
+    const params = {q,page,status,rated,genre,score, start_date,end_date,genre_exclude,limit,sort,order_by}
 
     return await Axios.get(`${MAL_JIKAN_URL}/search/${type}`,{params})
     .then(data=>{
