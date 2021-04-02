@@ -6,6 +6,7 @@ const MalSearchRankingItem = require('../model/MalSearchRankingItem');
 const {cleanText,malTypeToKorea} = require('../util/utils');
 const MalSearchScheduleItem = require('../model/MalSearchScheduleItem');
 const MalSearchGenreItem = require('../model/MalSearchGenreItem');
+const MalSearchAllItem = require('../model/MalSearchAllItem');
 
 
 const googleSearchParsing = (searchObj, limit) => {
@@ -27,6 +28,17 @@ const googleSearchParsing = (searchObj, limit) => {
     } else {
         console.log('검색된 아이템이 없습니다.')
         return false
+    }
+}
+
+const malAllParsing = (malItems)=>{
+    try {
+        return malItems.map(({mal_id , title,image_url,airing, start_date, end_date , rated, score ,type , episodes})=>{
+          return new MalSearchAllItem(mal_id.toString(), title, image_url ,airing,start_date,end_date, rated, score.toString(),type,episodes.toString());
+        })
+    } catch (e) {
+        console.error(`malAllParsing error ${e}`);
+        return false;
     }
 }
 
@@ -174,5 +186,6 @@ module.exports = {
     tmdbDetailItemParsing: tmdbDetailItemParsing,
     translateTextParsing: translateTextParsing  ,
     malScheduleParsing:malScheduleParsing,
-    malGenreParsing:malGenreParsing
+    malGenreParsing:malGenreParsing,
+    malAllParsing:malAllParsing
 }

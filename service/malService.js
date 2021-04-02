@@ -1,6 +1,6 @@
 const Axios = require('axios');
 const { MAL_ACCESS_TOKEN, MAL_CLIENT_ID, MAL_CLIENT_SECRET, MAL_BASE_URL, MAL_JIKAN_URL } = require('../appConstants');
-const { malSearchParsing, malSearchDetailParsing, malSearchRankingParsing, malScheduleParsing ,malGenreParsing} = require('../util/parsing');
+const { malAllParsing, malSearchParsing, malSearchDetailParsing, malSearchRankingParsing, malScheduleParsing ,malGenreParsing} = require('../util/parsing');
 const headers = { 'Authorization': `Bearer ${MAL_ACCESS_TOKEN}` }
 const { getSeasonText, getYear, getScheduleText, getToday } = require('../util/utils');
 
@@ -35,7 +35,11 @@ const searchAllItems = async(type,q,page,status , rated, genre ,score , startDat
     const params = {q,page,status,rated,genre,score, start_date,end_date,genre_exclude,limit,sort}
 
     return await Axios.get(`${MAL_JIKAN_URL}/search/${type}`,{params})
-    .then(data=>data.data.results)  
+    .then(data=>{
+        const result = data.data.results;
+        if(!result ||result && result.length === 0 ) return false
+        return malAllParsing(result);
+    })  
     .catch(e=>{
         console.error(`searchAllItems 실패 :${e}`)
         return false;
