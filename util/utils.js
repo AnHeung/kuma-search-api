@@ -128,14 +128,15 @@ const appendImageText =  (image_url)=>{
     if(image_url && image_url.length > 0){
         const imgSplit  =  image_url.split('.')
         const changeIdx = imgSplit.length-2
+        const lastIdx = imgSplit.length -1
 
         imgSplit.forEach((data,idx) => {
             if(idx === changeIdx){
-                image += `${data}l`
-            }else if(idx === 0){
+                image += `${data}l.`
+            }else if(idx === lastIdx){
                 image+= data
             }else{
-                image+= `.${data}`
+                image+= `${data}.`
             }
         });
     }
