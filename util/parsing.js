@@ -80,25 +80,48 @@ const malSearchParsing = (malItems) => {
     }
 }
 
-const malSearchRankingParsing = (malItems, type) => {
+const malSeasonParsing = (limit, malItems) => {
     try {
-        return {
-            type: type,
-            koreaType:malTypeToKorea(type),
-            rank_result: malItems.map(({ node: { id, title, main_picture: { large } }, ranking: { rank } }) => {
-                return new MalSearchRankingItem(id, title, large, rank)
-            })
+
+        let seasonItems = malItems.map(({ mal_id, title, image_url }) => new MalSearchItem(mal_id, title, image_url));
+        let duplicateArr = [];
+        let shuffleArr = [];
+
+        for (let i = 0; i < limit; i++) {
+            const randomNo = Math.floor(Math.random() * seasonItems.length)
+            if(!duplicateArr.find(no=>randomNo === no)){
+                const shuffleItem = seasonItems[randomNo];
+                shuffleArr.push(shuffleItem);
+                duplicateArr.push(randomNo);
+            }else{
+                i--;
+            }
         }
+        return shuffleArr;
     } catch (e) {
         console.error(`malSearchParsing err: ${e}`)
         return false
     }
 }
 
-const malSearchDetailParsing = async (searchDetailItem, type) => {
+const malSearchRankingParsing = (malItems, ranking_type, limit) => {
     try {
-        if (searchDetailItem) {
-            
+        const rankingItem = {
+            type: ranking_type,
+            koreaType:malTypeToKorea(ranking_type),
+            rank_result: malItems.map(( { mal_id, title, image_url,rank ,score}) => {
+                return new MalSearchRankingItem(mal_id, title, image_url, rank, score.toString())
+            }).splice(0,limit)
+        }
+        return rankingItem;
+    } catch (e) {
+        console.error(`malSearchParsing err: ${e}`)
+        return false
+    }
+}
+
+const malSearchDetailParsing = async (searchDetailItem) => {
+    try {
             //mean 별점수
             const { id, title, main_picture, pictures,start_date, end_date, mean, popularity, rank, synopsis
                 , status, genres, start_season,num_episodes, related_anime,recommendations ,studios} = searchDetailItem
@@ -107,7 +130,6 @@ const malSearchDetailParsing = async (searchDetailItem, type) => {
             const pictureArr =  pictures ? pictures.map(img=>img.large) : []
             const image = main_picture ? main_picture.large : undefined
 
-            if (type === 'all') {
                 const genresName = genres.reduce((acc, { name }) => {
                     if (!acc) acc = name
                     else acc += `,${name}`
@@ -130,12 +152,6 @@ const malSearchDetailParsing = async (searchDetailItem, type) => {
                 const koreaSynopsis = await translateText('ko', cleanText(synopsis)) || synopsis
 
                 return new MalSearchDetailItem(id, title, image, start_date, end_date, star, popularity.toString(), rank, koreaSynopsis, status, cleanText(genresName), num_episodes.toString(), startSeason, pictureArr,relatedAnimeArr,recommendationsArr,studioArr)
-            }
-            return new MalSearchDetailSimpleItem(id, title, image, start_date)
-        } else {
-            console.log('검색된 아이템이 없습니다.')
-            return false
-        }
     } catch (err) {
         console.log(`malSearchDetailParsing err :${err}`)
         return false
@@ -187,5 +203,6 @@ module.exports = {
     translateTextParsing: translateTextParsing  ,
     malScheduleParsing:malScheduleParsing,
     malGenreParsing:malGenreParsing,
-    malAllParsing:malAllParsing
+    malAllParsing:malAllParsing,
+    malSeasonParsing:malSeasonParsing
 }

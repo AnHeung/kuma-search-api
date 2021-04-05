@@ -1,6 +1,6 @@
 const Axios = require('axios');
 const { MAL_ACCESS_TOKEN, MAL_CLIENT_ID, MAL_CLIENT_SECRET, MAL_BASE_URL, MAL_JIKAN_URL } = require('../appConstants');
-const { malAllParsing, malSearchParsing, malSearchDetailParsing, malSearchRankingParsing, malScheduleParsing ,malGenreParsing} = require('../util/parsing');
+const { malAllParsing, malSearchParsing,malSeasonParsing, malSearchDetailParsing, malSearchRankingParsing, malScheduleParsing ,malGenreParsing} = require('../util/parsing');
 const headers = { 'Authorization': `Bearer ${MAL_ACCESS_TOKEN}` }
 const { getSeasonText, getYear, getScheduleText, getToday } = require('../util/utils');
 
@@ -49,18 +49,15 @@ const searchAllItems = async(type,q,page,status , rated, genre ,score , startDat
 
 
 
-const searchAnimeRankingItems = async (ranking_type, limit) => {
+const searchAnimeRankingItems = async (type, page,ranking_type,limit) => {
 
-    const params = { ranking_type, limit }
-
-    return await Axios.get(`${MAL_BASE_URL}/ranking`, {
-        params,
+    return await Axios.get(`${MAL_JIKAN_URL}/top/${type}/${page}/${ranking_type}`, {
         headers
     })
         .then(data => {
-            const malRankingItems = data.data.data
+            const malRankingItems = data.data.top
             if (!malRankingItems || malRankingItems && malRankingItems.length === 0) return false
-            return malSearchRankingParsing(malRankingItems, ranking_type)
+            return malSearchRankingParsing(malRankingItems, ranking_type,limit)
         })
         .catch(e => {
             console.error(`searchAnimeRankingItems err : ${e}`)
@@ -68,13 +65,13 @@ const searchAnimeRankingItems = async (ranking_type, limit) => {
         })
 }
 
-const searchAnimeAllRankingItems = async (rankType, limit) => {
+const searchAnimeAllRankingItems = async (searchType, page, rankType,limit) => {
 
     const typeArr = (!rankType || (rankType && rankType === 'all')) ? ['airing', 'upcoming', 'movie', 'ova', 'tv'] : rankType.split(',');
     console.log(` typeArr ${typeArr} : rankType :${rankType}`);
 
-    return Promise.all(typeArr.map(type => {
-        return searchAnimeRankingItems(type, limit)
+    return Promise.all(typeArr.map(rankType => {
+        return searchAnimeRankingItems(searchType,page, rankType,limit)
     }))
         .then(result => result.filter(data => data))
         .catch(e => {
@@ -117,16 +114,14 @@ const searchSeasonItems = async (limit) => {
 
     const season = getSeasonText();
     const year = getYear();
-    const params = { limit };
 
-    return await Axios.get(`${MAL_BASE_URL}/season/${year}/${season}`, {
-        params,
+    return await Axios.get(`${MAL_JIKAN_URL}/season/${year}/${season}`, {
         headers
     })
         .then(data => {
-            const malSeasonItems = data.data.data
+            const malSeasonItems = data.data.anime
             if (!malSeasonItems || malSeasonItems && malSeasonItems.length === 0) return false
-            return malSearchParsing(malSeasonItems)
+            return malSeasonParsing(limit,malSeasonItems)
         })
         .catch(e => {
             console.error(`searchSeasonItems err : ${e}`)
@@ -135,23 +130,21 @@ const searchSeasonItems = async (limit) => {
 }
 
 
-const searchAnimeDetailData = async (id, type) => {
+const searchAnimeDetailData = async (id) => {
 
-    if (!id) {
-        console.log(`searchAnimeDetailData id값 없음.`)
-        return false
-    }
-    const fields = type === 'all'
-        ? 'id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank,popularity,num_list_users,num_scoring_users,nsfw,created_at,updated_at,media_type,status,genres,my_list_status,num_episodes,start_season,broadcast,source,average_episode_duration,rating,pictures,background,related_anime,related_manga,recommendations,studios,statistics'
-        : 'id,title,main_picture,start_date'
-
+    const fields = 'id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank,popularity,num_list_users,num_scoring_users,nsfw,created_at,updated_at,media_type,status,genres,my_list_status,num_episodes,start_season,broadcast,source,average_episode_duration,rating,pictures,background,related_anime,related_manga,recommendations,studios,statistics'
+    
     const params = { fields }
 
     return await Axios.get(`${MAL_BASE_URL}/${id}`, {
         params,
         headers
     })
-        .then(async (data) => await malSearchDetailParsing(data.data, type))
+        .then(async (data) => {
+            const malItems = data.data
+            if(!malItems || malItems && malItems.length === 0) return false
+            return await malSearchDetailParsing(data.data);
+        })
         .catch(e => {
             console.error(`searchAnimeDetailData err : ${e}`)
             return false

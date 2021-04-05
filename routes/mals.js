@@ -22,14 +22,13 @@ router.get('/data', async (req, res) => {
 })
 
 
-router.get('/detail', async (req, res) => {
+router.get('/detail/:id/', async (req, res) => {
 
     try {
-        const id = parseInt(req.query.id)
-        const type = req.query.type
+        const id = req.params.id
 
         if (id) {
-            const malSearchResult = await searchAnimeDetailData(id, type)
+            const malSearchResult = await searchAnimeDetailData(id)
             return malSearchResult
                 ? res.status(200).send(successAndFetchData('MAL 검색 성공.', malSearchResult))
                 : res.status(200).send(errMsg('MAL 검색 실패.'))
@@ -219,13 +218,15 @@ router.get('/genre/:type/:id/:page', async (req, res) => {
 
 })
 
-router.get('/ranking', async (req, res) => {
+router.get('/ranking/:type/:page/:rank_type/:limit', async (req, res) => {
 
     try {
-        const limit = req.query.limit || '30'
-        let rank_type = req.query.ranking_type
+        const type = req.params.type || 'anime'
+        const page = req.params.page || '1'
+        const rank_type = req.params.rank_type || 'airing,upcomming,movie'
+        const limit = req.params.limit || '30'
 
-        const malSearchResult = await searchAnimeAllRankingItems(rank_type, limit)
+        const malSearchResult = await searchAnimeAllRankingItems(type,page,rank_type,limit)
         return malSearchResult
             ? res.status(200).send(successAndFetchData('MAL 랭킹 검색 성공.', malSearchResult))
             : res.status(200).send(errMsg('MAL 랭킹 검색 실패.'))
