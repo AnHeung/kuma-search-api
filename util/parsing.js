@@ -3,7 +3,7 @@ const MalSearchItem = require('../model/MalSearchItem')
 const MalSearchDetailItem = require('../model/MalSearchDetailItem')
 const MalSearchDetailSimpleItem = require('../model/MalSearchDetailSimpleItem')
 const MalSearchRankingItem = require('../model/MalSearchRankingItem');
-const {cleanText,malTypeToKorea} = require('../util/utils');
+const {cleanText,malTypeToKorea,appendImageText} = require('../util/utils');
 const MalSearchScheduleItem = require('../model/MalSearchScheduleItem');
 const MalSearchGenreItem = require('../model/MalSearchGenreItem');
 const MalSearchAllItem = require('../model/MalSearchAllItem');
@@ -83,7 +83,10 @@ const malSearchParsing = (malItems) => {
 const malSeasonParsing = (limit, malItems) => {
     try {
 
-        let seasonItems = malItems.map(({ mal_id, title, image_url }) => new MalSearchItem(mal_id, title, image_url));
+        let seasonItems = malItems.map(({ mal_id, title, image_url }) =>{
+            let image = appendImageText(image_url)
+            return new MalSearchItem(mal_id, title, image)
+        });
         let duplicateArr = [];
         let shuffleArr = [];
 

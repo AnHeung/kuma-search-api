@@ -121,7 +121,7 @@ const searchSeasonItems = async (limit) => {
         .then(data => {
             const malSeasonItems = data.data.anime
             if (!malSeasonItems || malSeasonItems && malSeasonItems.length === 0) return false
-            return malSeasonParsing(limit,malSeasonItems)
+        return malSeasonParsing(limit,malSeasonItems)
         })
         .catch(e => {
             console.error(`searchSeasonItems err : ${e}`)

@@ -122,6 +122,26 @@ const cleanText = (text)=>{
     return text.replace(/([\t|\n])/gi, "").toString().trim()
 }
 
+const appendImageText =  (image_url)=>{
+    let image =""
+
+    if(image_url && image_url.length > 0){
+        const imgSplit  =  image_url.split('.')
+        const changeIdx = imgSplit.length-2
+
+        imgSplit.forEach((data,idx) => {
+            if(idx === changeIdx){
+                image += `${data}l`
+            }else if(idx === 0){
+                image+= data
+            }else{
+                image+= `.${data}`
+            }
+        });
+    }
+    return image
+}
+
 
 
 module.exports = {
@@ -132,6 +152,7 @@ module.exports = {
     getYear:getYear,
     malTypeToKorea:malTypeToKorea,
     getScheduleText:getScheduleText,
-    getToday:getToday
+    getToday:getToday,
+    appendImageText:appendImageText
 }
 
