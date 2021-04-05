@@ -80,7 +80,19 @@ const malSearchParsing = (malItems) => {
     }
 }
 
-const malSeasonParsing = (limit, malItems) => {
+const malSeasonParsing = (malItems) => {
+    try {
+        return malItems.map(({ node: { id, title, main_picture } }) => {
+            const image = (main_picture && main_picture.large) || ''
+            return new MalSearchItem(id, title, image)
+        })
+    } catch (e) {
+        console.error(`malSearchParsing err: ${e}`)
+        return false
+    }
+}
+
+const malJikanSeasonParsing = (limit, malItems) => {
     try {
 
         let seasonItems = malItems.map(({ mal_id, title, image_url }) =>{

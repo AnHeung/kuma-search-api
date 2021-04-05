@@ -114,21 +114,22 @@ const searchSeasonItems = async (limit) => {
 
     const season = getSeasonText();
     const year = getYear();
+    const params = {limit}
 
-    return await Axios.get(`${MAL_JIKAN_URL}/season/${year}/${season}`, {
+    return await Axios.get(`${MAL_BASE_URL}/season/${year}/${season}`, {
+        params,
         headers
     })
         .then(data => {
-            const malSeasonItems = data.data.anime
+            const malSeasonItems = data.data.data
             if (!malSeasonItems || malSeasonItems && malSeasonItems.length === 0) return false
-        return malSeasonParsing(limit,malSeasonItems)
+        return malSeasonParsing(malSeasonItems)
         })
         .catch(e => {
             console.error(`searchSeasonItems err : ${e}`)
             return false
         })
 }
-
 
 const searchAnimeDetailData = async (id) => {
 
