@@ -1,3 +1,5 @@
+const moment = require('moment');
+
 
 const makeCodeChallenge = () => {
 
@@ -32,40 +34,40 @@ const isEmpty = value => {
     }
 }
 
-const getYear = ()=> new Date().getFullYear()
+const getYear = () => new Date().getFullYear()
 
-const getScheduleText =  (day)=>{
+const getScheduleText = (day) => {
 
-    switch(day){
-        case '1': 
-        return  "monday"
-        case '2': 
-        return "tuesday"    
-        case '3': 
-        return "wednesday"
-        case '4': 
-        return "thursday"
-        case '5': 
-        return "friday"
-        case '6': 
-        return  "saturday"
-        case '0': 
-        return "sunday"
+    switch (day) {
+        case '1':
+            return "monday"
+        case '2':
+            return "tuesday"
+        case '3':
+            return "wednesday"
+        case '4':
+            return "thursday"
+        case '5':
+            return "friday"
+        case '6':
+            return "saturday"
+        case '0':
+            return "sunday"
     }
     return "monday";
 }
 
-const getSeasonText = ()=>{
+const getSeasonText = () => {
 
     const month = new Date().getMonth();
     let monthText = "spring";
-    switch(month){
-        case 1 : 
-        case 2 :
-        case 3 :
+    switch (month) {
+        case 1:
+        case 2:
+        case 3:
             monthText = "winter";
             break;
-        case 4 :
+        case 4:
         case 5:
         case 6:
             monthText = "spring";
@@ -84,30 +86,30 @@ const getSeasonText = ()=>{
     return monthText;
 }
 
-const malTypeToKorea = (type)=>{
+const malTypeToKorea = (type) => {
 
-    if(isEmpty(type)) return "해당없음";
+    if (isEmpty(type)) return "해당없음";
 
-    switch(type.toLowerCase()){
-        case  'airing' :
+    switch (type.toLowerCase()) {
+        case 'airing':
             type = "상영중"
-        break;
-        case  'movie' :
+            break;
+        case 'movie':
             type = "극장판"
-        break;
-        case  'ova' :
+            break;
+        case 'ova':
             type = type.toUpperCase()
-        case  'tv' :
+        case 'tv':
             type = type.toUpperCase()
-        break;
-        case  'upcoming' :
+            break;
+        case 'upcoming':
             type = "상영예정"
-        break;
+            break;
     }
     return type;
 }
 
-const getToday = ()=>{
+const getToday = () => {
     const date = new Date();
     const year = date.getFullYear();
     const month = ("0" + (1 + date.getMonth())).slice(-2);
@@ -117,26 +119,40 @@ const getToday = ()=>{
 }
 
 
-const cleanText = (text)=>{
-    if(isEmpty(text) || !isEmpty(text) && typeof text !== 'string') return ''
+const cleanText = (text) => {
+    if (isEmpty(text) || !isEmpty(text) && typeof text !== 'string') return ''
     return text.replace(/([\t|\n])/gi, "").toString().trim()
 }
 
-const appendImageText =  (image_url)=>{
-    let image =""
+const getFourYearData = () => {
+    const currentYear = moment().year();
+    const yearArr = [currentYear, currentYear - 1, currentYear - 2, currentYear - 3];
+    const format = "yyyy-MM-DD"
 
-    if(image_url && image_url.length > 0){
-        const imgSplit  =  image_url.split('.')
-        const changeIdx = imgSplit.length-2
-        const lastIdx = imgSplit.length -1
+    return yearArr.map(year => {
+        if (year === currentYear) {
+            return { category: year.toString(), categoryValue: `${moment(year.toString()).format(format)}~${moment().format(format)}}`}
+        } else {
+            return { category: year.toString(), categoryValue: `${moment(year.toString()).format(format)}~${year}-12-31`}
+        }
+    })
+}
 
-        imgSplit.forEach((data,idx) => {
-            if(idx === changeIdx){
+const appendImageText = (image_url) => {
+    let image = ""
+
+    if (image_url && image_url.length > 0) {
+        const imgSplit = image_url.split('.')
+        const changeIdx = imgSplit.length - 2
+        const lastIdx = imgSplit.length - 1
+
+        imgSplit.forEach((data, idx) => {
+            if (idx === changeIdx) {
                 image += `${data}l.`
-            }else if(idx === lastIdx){
-                image+= data
-            }else{
-                image+= `${data}.`
+            } else if (idx === lastIdx) {
+                image += data
+            } else {
+                image += `${data}.`
             }
         });
     }
@@ -148,12 +164,13 @@ const appendImageText =  (image_url)=>{
 module.exports = {
     makeCodeChallenge: makeCodeChallenge,
     cleanText: cleanText,
-    isEmpty:isEmpty,
-    getSeasonText:getSeasonText,
-    getYear:getYear,
-    malTypeToKorea:malTypeToKorea,
-    getScheduleText:getScheduleText,
-    getToday:getToday,
-    appendImageText:appendImageText
+    isEmpty: isEmpty,
+    getSeasonText: getSeasonText,
+    getYear: getYear,
+    malTypeToKorea: malTypeToKorea,
+    getScheduleText: getScheduleText,
+    getToday: getToday,
+    appendImageText: appendImageText,
+    getFourYearData: getFourYearData
 }
 

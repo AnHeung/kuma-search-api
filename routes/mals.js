@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { errMsg, successMsg, successAndFetchData } = require('../util/errorHandle');
-const { searchAllItems, searchAnimeItems, searchAnimeDetailData, searchAnimeAllRankingItems, searchSeasonItems, searchScheduleItems, searchGenreItems } = require('../service/malService')
+const { getGenreList,searchAllItems, searchAnimeItems, searchAnimeDetailData, searchAnimeAllRankingItems, searchSeasonItems, searchScheduleItems, searchGenreItems } = require('../service/malService')
 
 router.get('/data', async (req, res) => {
 
@@ -179,6 +179,15 @@ router.get('/season', async (req, res) => {
         return res.status(404).send(errMsg(`Season Item 검색 실패 ${e}`));
     }
 
+})
+
+router.get('/genreList' , async(req,res)=>{
+    try {
+        const genreArr = getGenreList();
+        return res.status(200).send(successAndFetchData('genreList 가져오기 성공', genreArr)); 
+    } catch (e) {
+        return res.status(404).send(errMsg(`genreList 가져오기 실패 ${e}`));
+    }
 })
 
 router.get('/schedule/:day', async (req, res) => {

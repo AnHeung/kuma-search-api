@@ -34,7 +34,7 @@ const googleSearchParsing = (searchObj, limit) => {
 const malAllParsing = (malItems)=>{
     try {
         return malItems.map(({mal_id , title,image_url,airing, start_date, end_date , rated, score ,type , episodes})=>{
-          return new MalSearchAllItem(mal_id.toString(), title, image_url ,airing,start_date,end_date, rated, score.toString(),type,episodes.toString());
+          return new MalSearchAllItem(mal_id.toString(), title, image_url ,airing,start_date,end_date, rated, (score||0).toString(),(type,episodes|| 0).toString());
         })
     } catch (e) {
         console.error(`malAllParsing error ${e}`);
@@ -219,5 +219,6 @@ module.exports = {
     malScheduleParsing:malScheduleParsing,
     malGenreParsing:malGenreParsing,
     malAllParsing:malAllParsing,
-    malSeasonParsing:malSeasonParsing
+    malSeasonParsing:malSeasonParsing,
+    malJikanSeasonParsing:malJikanSeasonParsing
 }
