@@ -156,7 +156,7 @@ const getGenreList = ()=>{
         {
             type:"genre",
             typeKorea:"장르",
-            result:[
+            genre_result:[
                 {category:"액션" , categoryValue:"1"},
                 {category:"어드벤쳐" , categoryValue:"2"},
                 {category:"코미디" , categoryValue:"4"},
