@@ -178,12 +178,12 @@ const getGenreList = ()=>{
         {
             type:"year",
             typeKorea:"연도",
-            result:getFourYearData()
+            genre_result:getFourYearData()
         },
         {
             type:"air",
             typeKorea:"방영",
-            result:[
+            genre_result:[
                 {category:"방영중" , categoryValue:"airing"},
                 {category:"완결" , categoryValue:"completed"},
                 {category:"방영예정" , categoryValue:"upcoming"},
@@ -193,7 +193,7 @@ const getGenreList = ()=>{
         {
             type:"rated",
             typeKorea:"등급",
-            result:[
+            genre_result:[
                 {category:"모두" , categoryValue:"g"},
                 {category:"어린이" , categoryValue:"pg"},
                 {category:"13세이하" , categoryValue:"pg13"},
