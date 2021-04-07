@@ -45,7 +45,7 @@ const malAllParsing = (malItems)=>{
 const malScheduleParsing = (malItems)=>{
     try {
         return malItems.map(({mal_id , title,image_url,score, airing_start})=>{
-          return new MalSearchScheduleItem(mal_id, title, image_url , score || 0.0 ,airing_start);
+          return new MalSearchScheduleItem(mal_id.toString(), title, image_url , (score ||0).toString() ,airing_start);
         })
     } catch (e) {
         console.error(`malScheduleParsing error ${e}`);
