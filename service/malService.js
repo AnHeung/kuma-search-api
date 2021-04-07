@@ -154,7 +154,7 @@ const getGenreList = ()=>{
 
     return [
         {
-            type:"genre",
+            type:"GENRE",
             typeKorea:"장르",
             genre_result:[
                 {category:"액션" , categoryValue:"1"},
@@ -176,12 +176,12 @@ const getGenreList = ()=>{
 
         },
         {
-            type:"year",
+            type:"YEAR",
             typeKorea:"연도",
             genre_result:getFourYearData()
         },
         {
-            type:"air",
+            type:"AIRING",
             typeKorea:"방영",
             genre_result:[
                 {category:"방영중" , categoryValue:"airing"},
@@ -191,7 +191,7 @@ const getGenreList = ()=>{
 
         },
         {
-            type:"rated",
+            type:"RATED",
             typeKorea:"등급",
             genre_result:[
                 {category:"모두" , categoryValue:"g"},
