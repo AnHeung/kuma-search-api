@@ -37,7 +37,7 @@ const searchAllItems = async (type, q, page, status, rated, genre, score, startD
     const genreAxios = Axios.get(`${MAL_JIKAN_URL}/search/${type}`, { params })
 
     if (genre_exclude) {
-        const genreExcludeParams = { q, page, status, rated, genre: genre_exclude, score, start_date, end_date, genre_exclude: "0", limit, sort, order_by }
+        const genreExcludeParams = { q, page, status, rated, genre: genre_exclude, score, start_date, end_date, genre_exclude: "0" , limit, sort, order_by }
         return Promise.all([genreAxios, Axios.get(`${MAL_JIKAN_URL}/search/${type}`, { params: genreExcludeParams })])
             .then(dataResult => {
                 const combinedArr = dataResult.reduce((acc, data) => {
