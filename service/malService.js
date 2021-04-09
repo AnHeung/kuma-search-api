@@ -37,7 +37,7 @@ const searchAllItems = async (type, q, page, status, rated, genre, score, startD
     const genreAxios = Axios.get(`${MAL_JIKAN_URL}/search/${type}`, { params })
 
     if (genre_exclude) {
-        const genreExcludeParams = { q, page, status, rated, genre: genre_exclude, score, start_date, end_date, genre_exclude: "0" , limit, sort, order_by }
+        const genreExcludeParams = { q, page, status, rated, genre: genre_exclude, score, start_date, end_date, genre_exclude: "0", limit, sort, order_by }
         return Promise.all([genreAxios, Axios.get(`${MAL_JIKAN_URL}/search/${type}`, { params: genreExcludeParams })])
             .then(dataResult => {
                 const combinedArr = dataResult.reduce((acc, data) => {
@@ -53,7 +53,7 @@ const searchAllItems = async (type, q, page, status, rated, genre, score, startD
                         acc.push(data)
                     }
                     return acc;
-                },[]).splice(1,50)
+                }, []).splice(1, 50)
 
                 return malAllParsing(filteredArr);
             })
@@ -84,6 +84,7 @@ const searchAnimeRankingItems = async (type, page, ranking_type, limit) => {
     })
         .then(data => {
             const malRankingItems = data.data.top
+            console.log(`ranking_type : ${ranking_type} , data : ${data.data.top.length}`)
             if (!malRankingItems || malRankingItems && malRankingItems.length === 0) return false
             return malSearchRankingParsing(malRankingItems, ranking_type, limit)
         })
@@ -101,6 +102,31 @@ const searchAnimeAllRankingItems = async (searchType, page, rankType, limit) => 
     return Promise.all(typeArr.map(rankType => {
         return searchAnimeRankingItems(searchType, page, rankType, limit)
     }))
+        .then(result => result.filter(data => data))
+        .catch(e => {
+            console.error(`searchAnimeAllRankingItems ${e}`)
+            return false
+        })
+}
+
+//api 가 호출횟수 제한이 있어서 텀을 두고 호출할떄 사용
+const searchAnimeAllRankingItemsWait = async (searchType, page, rankType, limit) => {
+
+    const typeArr = (!rankType || (rankType && rankType === 'all')) ? ['airing', 'upcoming', 'movie', 'ova'] : rankType.split(',');
+    console.log(` typeArr ${typeArr} : rankType :${rankType}`);
+    const resultArr = []
+
+    return typeArr.reduce((promise, rankType) => {
+        promise = promise.then(() => {
+            return new Promise((res, rej) => {
+                setTimeout(async () => {
+                    resultArr.push(await searchAnimeRankingItems(searchType, page, rankType, limit))
+                    res(resultArr)
+                }, 100);
+            })
+        })
+        return promise
+    }, Promise.resolve())
         .then(result => result.filter(data => data))
         .catch(e => {
             console.error(`searchAnimeAllRankingItems ${e}`)
