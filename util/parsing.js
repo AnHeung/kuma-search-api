@@ -145,11 +145,11 @@ const malSearchDetailParsing = async (searchDetailItem) => {
             const pictureArr =  pictures ? pictures.map(img=>img.large) : []
             const image = main_picture ? main_picture.large : undefined
 
-                const genresName = genres.reduce((acc, { name }) => {
+                const genresName = genres && genres.reduce((acc, { name }) => {
                     if (!acc) acc = name
                     else acc += `,${name}`
                     return acc
-                }, '')
+                }, '') 
                 const relatedAnimeArr = related_anime.map(({ node: { id, title, main_picture } }) => {
                     const image = main_picture ? main_picture.large : undefined;
                     return new MalSearchItem(id, title, image)
