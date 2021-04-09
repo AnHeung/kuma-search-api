@@ -125,7 +125,7 @@ const malSearchRankingParsing = (malItems, ranking_type, limit) => {
             type: ranking_type,
             koreaType:malTypeToKorea(ranking_type),
             rank_result: malItems.map(( { mal_id, title, image_url,rank ,score}) => {
-                return new MalSearchRankingItem(mal_id, title, image_url, rank, score.toString())
+                return new MalSearchRankingItem(mal_id.toString(), title, image_url, rank.toString(), score.toString())
             }).splice(0,limit)
         }
         return rankingItem;
