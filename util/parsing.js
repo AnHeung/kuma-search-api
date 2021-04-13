@@ -3,7 +3,7 @@ const MalSearchItem = require('../model/MalSearchItem')
 const MalSearchDetailItem = require('../model/MalSearchDetailItem')
 const MalSearchDetailSimpleItem = require('../model/MalSearchDetailSimpleItem')
 const MalSearchRankingItem = require('../model/MalSearchRankingItem');
-const {cleanText,malTypeToKorea,appendImageText} = require('../util/utils');
+const { cleanText, malTypeToKorea, appendImageText } = require('../util/utils');
 const MalSearchScheduleItem = require('../model/MalSearchScheduleItem');
 const MalSearchGenreItem = require('../model/MalSearchGenreItem');
 const MalSearchAllItem = require('../model/MalSearchAllItem');
@@ -31,10 +31,10 @@ const googleSearchParsing = (searchObj, limit) => {
     }
 }
 
-const malAllParsing = (malItems)=>{
+const malAllParsing = (malItems) => {
     try {
-        return malItems.map(({mal_id , title,image_url,airing, start_date, end_date , rated, score ,type , episodes})=>{
-          return new MalSearchAllItem(mal_id.toString(), title, image_url ,airing,start_date,end_date, rated, (score||0).toString(),(type,episodes|| 0).toString());
+        return malItems.map(({ mal_id, title, image_url, airing, start_date, end_date, rated, score, type, episodes }) => {
+            return new MalSearchAllItem(mal_id.toString(), title, image_url, airing, start_date, end_date, rated, (score || 0).toString(), (type, episodes || 0).toString());
         })
     } catch (e) {
         console.error(`malAllParsing error ${e}`);
@@ -42,10 +42,10 @@ const malAllParsing = (malItems)=>{
     }
 }
 
-const malScheduleParsing = (malItems)=>{
+const malScheduleParsing = (malItems) => {
     try {
-        return malItems.map(({mal_id , title,image_url,score, airing_start})=>{
-          return new MalSearchScheduleItem(mal_id.toString(), title, image_url , (score ||0).toString() ,airing_start);
+        return malItems.map(({ mal_id, title, image_url, score, airing_start }) => {
+            return new MalSearchScheduleItem(mal_id.toString(), title, image_url, (score || 0).toString(), airing_start);
         })
     } catch (e) {
         console.error(`malScheduleParsing error ${e}`);
@@ -54,13 +54,13 @@ const malScheduleParsing = (malItems)=>{
 }
 
 
-const malGenreParsing = (malItems)=>{
+const malGenreParsing = (malItems) => {
     try {
-        return malItems.map(({mal_id , title,image_url,score,episodes, airing_start ,genres})=>{
-            const genreArr = genres.map(({mal_id, name})=>{
-                return {genre_id : mal_id,genre_name :name};
+        return malItems.map(({ mal_id, title, image_url, score, episodes, airing_start, genres }) => {
+            const genreArr = genres.map(({ mal_id, name }) => {
+                return { genre_id: mal_id, genre_name: name };
             });
-            return new MalSearchGenreItem(mal_id , title ,image_url , score, episodes , airing_start , genreArr);
+            return new MalSearchGenreItem(mal_id, title, image_url, score, episodes, airing_start, genreArr);
         })
     } catch (e) {
         console.error(`malScheduleParsing error ${e}`);
@@ -95,7 +95,7 @@ const malSeasonParsing = (malItems) => {
 const malJikanSeasonParsing = (limit, malItems) => {
     try {
 
-        let seasonItems = malItems.map(({ mal_id, title, image_url }) =>{
+        let seasonItems = malItems.map(({ mal_id, title, image_url }) => {
             let image = appendImageText(image_url)
             return new MalSearchItem(mal_id, title, image)
         });
@@ -104,11 +104,11 @@ const malJikanSeasonParsing = (limit, malItems) => {
 
         for (let i = 0; i < limit; i++) {
             const randomNo = Math.floor(Math.random() * seasonItems.length)
-            if(!duplicateArr.find(no=>randomNo === no)){
+            if (!duplicateArr.find(no => randomNo === no)) {
                 const shuffleItem = seasonItems[randomNo];
                 shuffleArr.push(shuffleItem);
                 duplicateArr.push(randomNo);
-            }else{
+            } else {
                 i--;
             }
         }
@@ -123,10 +123,10 @@ const malSearchRankingParsing = (malItems, ranking_type, limit) => {
     try {
         const rankingItem = {
             type: ranking_type,
-            koreaType:malTypeToKorea(ranking_type),
-            rank_result: malItems.map(( { mal_id, title, image_url,rank ,score}) => {
+            koreaType: malTypeToKorea(ranking_type),
+            rank_result: malItems.map(({ mal_id, title, image_url, rank, score }) => {
                 return new MalSearchRankingItem(mal_id.toString(), title, image_url, rank.toString(), score.toString())
-            }).splice(0,limit)
+            }).splice(0, limit)
         }
         return rankingItem;
     } catch (e) {
@@ -137,31 +137,41 @@ const malSearchRankingParsing = (malItems, ranking_type, limit) => {
 
 const malSearchDetailParsing = async (searchDetailItem) => {
     try {
-            //mean 별점수
-            const { id, title, main_picture, pictures,start_date, end_date, mean, popularity, rank, synopsis
-                , status, genres, start_season,num_episodes, related_anime,recommendations ,studios} = searchDetailItem
-            const startSeason = start_season ? start_season.year.toString() : start_date                
-            const star = mean ? mean.toString() : "0"
-            const pictureArr =  pictures ? pictures.map(img=>img.large) : []
-            const image = main_picture ? main_picture.large : undefined
+        //mean 별점수
+        const { id, title, main_picture, pictures, start_date, end_date, mean, popularity, rank, synopsis
+            , status, genres, start_season, num_episodes, related_anime, recommendations, studios } = searchDetailItem
+        const mal_id = id ? id.toString() : "0"
+        const score = rank ? rank.toString() : "0"
+        const startSeason = start_season ? start_season.year.toString() : start_date
+        const star = mean ? mean.toString() : "0"
+        const episodes = num_episodes ? num_episodes.toString() : "0"
+        const pictureArr = pictures ? pictures.map(img => img.large) : []
+        const image = main_picture && main_picture.large
+        
+        const genreArr = genres.map(({id,name})=>{
+            return {id:id && id.toString(), name}
+        })
+        const relatedAnimeArr = related_anime.map(({ node: { id, title, main_picture } }) => {
+            const image = main_picture && main_picture.large
+            const relate_id = id && id.toString()
+            return new MalSearchItem(relate_id, title, image)
+        })
+        const recommendationsArr = recommendations.map(({ node: { id, title, main_picture } }) => {
+            const image = main_picture ? main_picture.large : undefined;
+            const recommend_id = id && id.toString()
+            return new MalSearchItem(id.toString(), title, image)
+        })
 
-                const relatedAnimeArr = related_anime.map(({ node: { id, title, main_picture } }) => {
-                    const image = main_picture ? main_picture.large : undefined;
-                    return new MalSearchItem(id, title, image)
-                })
-                const recommendationsArr = recommendations.map(({ node: { id, title, main_picture } }) => {
-                    const image = main_picture ? main_picture.large : undefined;
-                    return new MalSearchItem(id, title, image)
-                })
+        const studioArr = studios.map(({ id, name }) => {
+            const studioId = id && id.toString()
+            return { id: studioId, name };
+        });
 
-                const studioArr = studios.map(({id,name})=>{
-                    return {id,name};
-                });
+        const { translateText } = require('../service/translateService')
+        const koreaSynopsis = await translateText('ko', cleanText(synopsis)) || synopsis
 
-                const {translateText} = require('../service/translateService')
-                const koreaSynopsis = await translateText('ko', cleanText(synopsis)) || synopsis
-
-                return new MalSearchDetailItem(id, title, image, start_date, end_date, star, popularity.toString(), rank, koreaSynopsis, status, genres, num_episodes.toString(), startSeason, pictureArr,relatedAnimeArr,recommendationsArr,studioArr)
+        return new MalSearchDetailItem(mal_id, title, image, start_date, end_date, star,
+            popularity.toString(), score, koreaSynopsis, status, genreArr, episodes, startSeason, pictureArr, relatedAnimeArr, recommendationsArr, studioArr)
     } catch (err) {
         console.log(`malSearchDetailParsing err :${err}`)
         return false
@@ -210,10 +220,10 @@ module.exports = {
     malSearchRankingParsing: malSearchRankingParsing,
     tmdbTitleParsing: tmdbTitleParsing,
     tmdbDetailItemParsing: tmdbDetailItemParsing,
-    translateTextParsing: translateTextParsing  ,
-    malScheduleParsing:malScheduleParsing,
-    malGenreParsing:malGenreParsing,
-    malAllParsing:malAllParsing,
-    malSeasonParsing:malSeasonParsing,
-    malJikanSeasonParsing:malJikanSeasonParsing
+    translateTextParsing: translateTextParsing,
+    malScheduleParsing: malScheduleParsing,
+    malGenreParsing: malGenreParsing,
+    malAllParsing: malAllParsing,
+    malSeasonParsing: malSeasonParsing,
+    malJikanSeasonParsing: malJikanSeasonParsing
 }
