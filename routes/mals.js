@@ -152,8 +152,8 @@ router.get('/all', async (req, res) => {
         const allResult =  await searchAllItems(type,q,page,status,rated,genre, score, startDate,endDate, genre_exclude, limit,sort);
 
         return allResult 
-             ? res.status(200).send(successAndFetchData('모든 데이터 전송 성공' , allResult))
-             : res.status(200).send(errMsg('모든 데이터 전송 실패'));
+             ? res.status(200).send(successAndFetchData('데이터 검색 성공' , allResult))
+             : res.status(200).send(errMsg('검색 결과가 없습니다.'));
 
     } catch (e) {
         console.error(`MAL search All err: ${e}`)
@@ -171,12 +171,12 @@ router.get('/season', async (req, res) => {
 
         const seasonItems = await searchSeasonItems(limit);
         return seasonItems
-            ? res.status(200).send(successAndFetchData('Season Item 검색 성공 ', seasonItems))
-            : res.status(200).send(errMsg('Season Item 검색 실패 '))
+            ? res.status(200).send(successAndFetchData('시즌리스트 검색 성공 ', seasonItems))
+            : res.status(200).send(errMsg('시즌리스트 검색 결과가 없습니다. '))
 
     } catch (e) {
         console.error(`Season Item 검색 실패 ${e}`)
-        return res.status(404).send(errMsg(`Season Item 검색 실패 ${e}`));
+        return res.status(404).send(errMsg(`Season Item 검색 에러 ${e}`));
     }
 
 })
@@ -184,9 +184,9 @@ router.get('/season', async (req, res) => {
 router.get('/genreList' , async(req,res)=>{
     try {
         const genreArr = getGenreList();
-        return res.status(200).send(successAndFetchData('genreList 가져오기 성공', genreArr)); 
+        return res.status(200).send(successAndFetchData('장르리스트 가져오기 성공', genreArr)); 
     } catch (e) {
-        return res.status(404).send(errMsg(`genreList 가져오기 실패 ${e}`));
+        return res.status(404).send(errMsg(`장르리스트 가져오기 실패 ${e}`));
     }
 })
 
@@ -198,8 +198,8 @@ router.get('/schedule/:day', async (req, res) => {
         const scheduleItem = await searchScheduleItems(day);
 
         return scheduleItem
-            ? res.status(200).send(successAndFetchData('schedule item 검색 성공', scheduleItem))
-            : res.status(200).send(errMsg('schedule item 검색 실패'));
+            ? res.status(200).send(successAndFetchData('스케쥴 검색 성공', scheduleItem))
+            : res.status(200).send(errMsg('스케쥴 검색 결과가 없습니다.'));
 
     } catch (e) {
         console.error(`schedule Item 검색 실패 ${e}`)
@@ -218,11 +218,11 @@ router.get('/genre/:type/:id/:page', async (req, res) => {
         const genreItems = await searchGenreItems(type, id, page);
 
         return genreItems
-            ? res.status(200).send(successAndFetchData('genre Item 검색 성공', genreItems))
-            : res.status(200).send(errMsg('genre Item 검색 실패'));
+            ? res.status(200).send(successAndFetchData('장르 검색 성공', genreItems))
+            : res.status(200).send(errMsg('장르 검색 실패'));
     } catch (e) {
-        console.error(`genre Item 검색 실패 ${e}`)
-        return res.status(404).send(errMsg(`genre Item 검색 실패 ${e}`));
+        console.error(`genre Item 검색 에러 ${e}`)
+        return res.status(404).send(errMsg(`genre Item 검색 에러 ${e}`));
     }
 
 })

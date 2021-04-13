@@ -11,11 +11,11 @@ router.get('/title', async (req, res) => {
         if (query) {
             const tmdbResult = await getAnimeListToEnglish(query, limit)
             return tmdbResult
-                ? res.status(200).send(successAndFetchData('TMDB 타이틀 검색 성공', tmdbResult))
-                : res.status(200).send(errMsg('TMDB 파라미터 입력 안됨.'))
+                ? res.status(200).send(successAndFetchData('타이틀 검색 성공', tmdbResult))
+                : res.status(200).send(errMsg('검색결과가 없습니다.'))
         } else {
             console.error('TMDB 검색 파라미터 입력안됨.')
-            return res.status(200).send(errMsg('TMDB 파라미터 입력 안됨.'))
+            return res.status(200).send(errMsg('검색 파라미터 입력안됨.'))
         }
     } catch (e) {
         console.error(`TMDB search err: ${e}`)
@@ -34,7 +34,7 @@ router.get('/text', async (req, res) => {
             const resultText = await translateText(target, text)
             return resultText
                 ? res.status(200).send(successAndFetchData('translateText  성공.', resultText))
-                : res.status(200).send(errMsg('translateText  실패.'))
+                : res.status(200).send(errMsg('translateText 실패.'))
         } else {
             console.error('번역 파라미터 입력안됨.')
             return res.status(200).send(errMsg('번역 파라미터 입력 안됨.'))
