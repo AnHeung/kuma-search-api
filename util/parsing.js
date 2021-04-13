@@ -145,11 +145,6 @@ const malSearchDetailParsing = async (searchDetailItem) => {
             const pictureArr =  pictures ? pictures.map(img=>img.large) : []
             const image = main_picture ? main_picture.large : undefined
 
-                const genresName = genres && genres.reduce((acc, { name }) => {
-                    if (!acc) acc = name
-                    else acc += `,${name}`
-                    return acc
-                }, '') 
                 const relatedAnimeArr = related_anime.map(({ node: { id, title, main_picture } }) => {
                     const image = main_picture ? main_picture.large : undefined;
                     return new MalSearchItem(id, title, image)
@@ -166,7 +161,7 @@ const malSearchDetailParsing = async (searchDetailItem) => {
                 const {translateText} = require('../service/translateService')
                 const koreaSynopsis = await translateText('ko', cleanText(synopsis)) || synopsis
 
-                return new MalSearchDetailItem(id, title, image, start_date, end_date, star, popularity.toString(), rank, koreaSynopsis, status, cleanText(genresName), num_episodes.toString(), startSeason, pictureArr,relatedAnimeArr,recommendationsArr,studioArr)
+                return new MalSearchDetailItem(id, title, image, start_date, end_date, star, popularity.toString(), rank, koreaSynopsis, status, genres, num_episodes.toString(), startSeason, pictureArr,relatedAnimeArr,recommendationsArr,studioArr)
     } catch (err) {
         console.log(`malSearchDetailParsing err :${err}`)
         return false
