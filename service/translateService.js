@@ -1,4 +1,4 @@
-const { searchAnimeItems } = require('./malService');
+const { searchAllItems } = require('./malService');
 const { getTvShowTitle } = require('./tmdbService');
 const { translateTextParsing } = require('../util/parsing');
 const qs = require('qs');
@@ -14,7 +14,7 @@ const Japanese = 'jp'
 
 const getAnimeListToEnglish = async (query, limit) => {
     const languageTitle = await getTvShowTitle(query, Japanese)
-    const translateList = languageTitle && await searchAnimeItems(languageTitle, limit)
+    const translateList = languageTitle && await searchAllItems("anime", languageTitle)
     return translateList
 }
 
