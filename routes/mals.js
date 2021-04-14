@@ -1,6 +1,8 @@
 const router = require('express').Router();
 const { errMsg, successMsg, successAndFetchData } = require('../util/errorHandle');
-const { getGenreList,searchAllItems, searchAnimeItems,searchJikanAnimeDetailData, searchAnimeDetailData, searchAnimeAllRankingItems, searchSeasonItems, searchScheduleItems, searchGenreItems } = require('../service/malService')
+const { getGenreList, searchAllItems, searchAnimeVideos, searchAnimeItems, searchJikanAnimeDetailData,
+    searchAnimeDetailData, searchAnimeAllRankingItems, searchSeasonItems,searchAnimeEpisodes,
+    searchScheduleItems, searchGenreItems } = require('../service/malService')
 
 
 router.get('/data', async (req, res) => {
@@ -18,6 +20,47 @@ router.get('/data', async (req, res) => {
         }
     } catch (e) {
         console.error(`MAL search err: ${e}`)
+        return res.status(404).send(errMsg(`${e}`))
+    }
+})
+
+router.get('/videos/:id', async (req, res) => {
+
+    try {
+        const id = req.params.id
+        if (id) {
+            const result = await searchAnimeVideos(id)
+            return result
+                ? res.status(200).send(successAndFetchData('MAL 비디오 검색 성공.', result))
+                : res.status(200).send(errMsg('MAL 비디오 검색 실패.'))
+
+        } else {
+            console.error('MAL 아이디 파라미터 입력안됨.')
+            return res.status(200).send(errMsg('MAL 아이디 파라미터 입력 안됨.'))
+        }
+    } catch (e) {
+        console.error(`MAL search videos 아이디 err: ${e}`)
+        return res.status(404).send(errMsg(`${e}`))
+    }
+})
+
+router.get('/episode/:id/:page', async (req, res) => {
+
+    try {
+        const id = req.params.id
+        const page = req.params.page || "1"
+        if (id) {
+            const result = await searchAnimeEpisodes(id,page)
+            return result
+                ? res.status(200).send(successAndFetchData('MAL episode 검색 성공.', result))
+                : res.status(200).send(errMsg('MAL episode 검색 실패.'))
+
+        } else {
+            console.error('MAL 아이디 파라미터 입력안됨.')
+            return res.status(200).send(errMsg('MAL 아이디 파라미터 입력 안됨.'))
+        }
+    } catch (e) {
+        console.error(`MAL search episode 아이디 err: ${e}`)
         return res.status(404).send(errMsg(`${e}`))
     }
 })
@@ -149,12 +192,12 @@ router.get('/all', async (req, res) => {
         const genre_exclude = req.query.genre_exclude || undefined
         const limit = req.query.limit || undefined
         const sort = req.query.sort || undefined
-        
-        const allResult =  await searchAllItems(type,q,page,status,rated,genre, score, startDate,endDate, genre_exclude, limit,sort);
 
-        return allResult 
-             ? res.status(200).send(successAndFetchData('데이터 검색 성공' , allResult))
-             : res.status(200).send(errMsg('검색 결과가 없습니다.'));
+        const allResult = await searchAllItems(type, q, page, status, rated, genre, score, startDate, endDate, genre_exclude, limit, sort);
+
+        return allResult
+            ? res.status(200).send(successAndFetchData('데이터 검색 성공', allResult))
+            : res.status(200).send(errMsg('검색 결과가 없습니다.'));
 
     } catch (e) {
         console.error(`MAL search All err: ${e}`)
@@ -182,10 +225,10 @@ router.get('/season', async (req, res) => {
 
 })
 
-router.get('/genreList' , async(req,res)=>{
+router.get('/genreList', async (req, res) => {
     try {
         const genreArr = getGenreList();
-        return res.status(200).send(successAndFetchData('장르리스트 가져오기 성공', genreArr)); 
+        return res.status(200).send(successAndFetchData('장르리스트 가져오기 성공', genreArr));
     } catch (e) {
         return res.status(404).send(errMsg(`장르리스트 가져오기 실패 ${e}`));
     }
@@ -236,7 +279,7 @@ router.get('/ranking/:type/:page/:rank_type/:limit', async (req, res) => {
         const rank_type = req.params.rank_type || 'airing,upcomming,movie'
         const limit = req.params.limit || '30'
 
-        const malSearchResult = await searchAnimeAllRankingItems(type,page,rank_type,limit)
+        const malSearchResult = await searchAnimeAllRankingItems(type, page, rank_type, limit)
         return malSearchResult
             ? res.status(200).send(successAndFetchData('MAL 랭킹 검색 성공.', malSearchResult))
             : res.status(200).send(errMsg('MAL 랭킹 검색 실패.'))

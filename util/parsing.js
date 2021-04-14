@@ -135,6 +135,18 @@ const malSearchRankingParsing = (malItems, ranking_type, limit) => {
     }
 }
 
+const malSearchVideoParsing = (videoItems)=>{
+    return videoItems.map(({title, image_url ,video_url})=>{
+        return {title , image_url , video_url}
+    })
+}
+
+const malSearchEpisodeParsing = (episodeItems)=>{
+    return episodeItems.map(({episode_id, title, image_url ,aired,video_url})=>{
+        return {episode_id, title ,air_date :aired , image_url , video_url}
+    })
+}
+
 const malSearchDetailParsing = async (searchDetailItem) => {
     try {
         //mean 별점수
@@ -265,7 +277,9 @@ module.exports = {
     translateTextParsing: translateTextParsing,
     malScheduleParsing: malScheduleParsing,
     malGenreParsing: malGenreParsing,
+    malSearchVideoParsing:malSearchVideoParsing,
     malAllParsing: malAllParsing,
+    malSearchEpisodeParsing:malSearchEpisodeParsing,
     malSeasonParsing: malSeasonParsing,
     malJikanSeasonParsing: malJikanSeasonParsing,
     malSearchJikanDetailParsing:malSearchJikanDetailParsing

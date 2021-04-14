@@ -2,7 +2,7 @@ const Axios = require('axios');
 const { MAL_ACCESS_TOKEN, MAL_AUTH_URL, MAL_CLIENT_ID, MAL_CLIENT_SECRET, MAL_BASE_URL, MAL_JIKAN_URL, MAL_REFRESH_TOKEN } = require('../appConstants');
 
 const { malAllParsing, malSearchParsing, malSeasonParsing, malJikanSeasonParsing,
-    malSearchJikanDetailParsing, malSearchDetailParsing, malSearchRankingParsing, malScheduleParsing, malGenreParsing } = require('../util/parsing');
+    malSearchJikanDetailParsing, malSearchDetailParsing, malSearchRankingParsing,malSearchEpisodeParsing, malSearchVideoParsing,malScheduleParsing, malGenreParsing } = require('../util/parsing');
 const { getSeasonText, getYear, getScheduleText, getToday, getFourYearData } = require('../util/utils');
 const { updateMalConfig} = require('../util/file_utils');
 
@@ -106,6 +106,8 @@ const searchAnimeAllRankingItems = async (searchType, page, rankType, limit) => 
             return false
         })
 }
+
+
 
 //api 가 호출횟수 제한이 있어서 텀을 두고 호출할떄 사용
 const searchAnimeAllRankingItemsWait = async (searchType, page, rankType, limit) => {
@@ -294,8 +296,8 @@ const searchJikanAnimeDetailData = async (id) => {
         })
 }
 
-const searchAnimeDetailData = async (id) => {
 
+const searchAnimeDetailData = async (id) => {
 
     const fields = 'id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank,popularity,num_list_users,num_scoring_users,nsfw,created_at,updated_at,media_type,status,genres,my_list_status,num_episodes,start_season,broadcast,source,average_episode_duration,rating,pictures,background,related_anime,related_manga,recommendations,studios,statistics'
 
@@ -313,6 +315,36 @@ const searchAnimeDetailData = async (id) => {
             return await malSearchDetailParsing(data.data);
         })
         .catch(catchErr("searchAnimeDetailData", ()=>searchAnimeDetailData(id)))
+}
+
+const searchAnimeVideos = async (id)=>{
+    const type = "anime"
+
+    return await Axios.get(`${MAL_JIKAN_URL}/${type}/${id}/videos`)
+        .then(data=>{
+            const videoItems = data.data.promo
+            if(!videoItems || videoItems && videoItems.length === 0) return false
+            return malSearchVideoParsing(videoItems)
+        })
+        .catch(e=>{
+            console.error(`searchAnimeVideos error : ${e}`)
+            return false
+        })
+}
+
+const searchAnimeEpisodes = async (id,page)=>{
+    const type = "anime"
+
+    return await Axios.get(`${MAL_JIKAN_URL}/${type}/${id}/episodes/${page}`)
+        .then(data=>{
+            const episodeItems = data.data.episodes
+            if(!episodeItems || episodeItems && episodeItems.length === 0) return false
+            return malSearchEpisodeParsing(episodeItems)
+        })
+        .catch(e=>{
+            console.error(`searchAnimeEpisodes error : ${e}`)
+            return false
+        })
 }
 
 const catchErr = (msg , callback) => {
@@ -358,7 +390,9 @@ module.exports = {
     searchAnimeAllRankingItems: searchAnimeAllRankingItems,
     searchSeasonItems: searchSeasonItems,
     searchScheduleItems: searchScheduleItems,
+    searchAnimeVideos: searchAnimeVideos,
     searchGenreItems: searchGenreItems,
+    searchAnimeEpisodes:searchAnimeEpisodes,
     searchAllItems: searchAllItems,
     getGenreList: getGenreList
 }
