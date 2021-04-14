@@ -159,7 +159,7 @@ const malSearchDetailParsing = async (searchDetailItem) => {
         const recommendationsArr = recommendations.map(({ node: { id, title, main_picture } }) => {
             const image = main_picture ? main_picture.large : undefined;
             const recommend_id = id && id.toString()
-            return new MalSearchItem(id.toString(), title, image)
+            return new MalSearchItem(recommend_id, title, image)
         })
 
         const studioArr = studios.map(({ id, name }) => {
@@ -177,6 +177,48 @@ const malSearchDetailParsing = async (searchDetailItem) => {
         return false
     }
 }
+
+const malSearchJikanDetailParsing = async (searchDetailItem) => {
+    try {
+        //mean 별점수
+        const { mal_id, title, image_url ,start_date,end_date, score, popularity, rank, synopsis
+            , status, genres, start_season, episodes, related , studios } = searchDetailItem
+        const id = mal_id ? mal_id.toString() : "0"
+        const rank_point = rank ? rank.toString() : "0"
+        const startSeason = start_season ? start_season.year.toString() : start_date
+        const star = score ? score.toString() : "0"
+        const num_episodes = episodes ? episodes.toString() : "0"
+        const image = image_url && appendImageText(image_url)
+        
+        const genreArr = genres.map(({mal_id,name})=>{
+            return {id:mal_id && mal_id.toString(), name}
+        })
+
+        const relatedAnimeArr = related && Object.keys(related).reduce((acc,key)=>{
+            related[key].filter(({type})=>type!='manga')
+            .forEach(({mal_id,name})=>{
+                acc.push(new MalSearchItem(mal_id, name, ""))
+            })
+            return acc
+        },[])
+
+
+        const studioArr = studios.map(({ id, name }) => {
+            const studioId = id && id.toString()
+            return { id: studioId, name };
+        });
+
+        const { translateText } = require('../service/translateService')
+        const koreaSynopsis = await translateText('ko', cleanText(synopsis)) || synopsis
+
+        return new MalSearchDetailItem(id, title, image, start_date, end_date, star,
+            popularity.toString(), rank_point, koreaSynopsis, status, genreArr, num_episodes, startSeason, undefined, relatedAnimeArr, undefined, studioArr)
+    } catch (err) {
+        console.log(`malSearchDetailParsing err :${err}`)
+        return false
+    }
+}
+
 
 const tmdbTitleParsing = (tmdbData) => {
     try {
@@ -225,5 +267,6 @@ module.exports = {
     malGenreParsing: malGenreParsing,
     malAllParsing: malAllParsing,
     malSeasonParsing: malSeasonParsing,
-    malJikanSeasonParsing: malJikanSeasonParsing
+    malJikanSeasonParsing: malJikanSeasonParsing,
+    malSearchJikanDetailParsing:malSearchJikanDetailParsing
 }

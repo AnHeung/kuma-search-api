@@ -4,9 +4,9 @@
 // ,broadcast,source,average_episode_duration,rating,pictures,background,related_anime,related_manga
 // ,recommendations,studios,statistics
 
-module.exports = function MalSearchDetailItem(id, title, image = '', start_date = '0000', end_date = '0000',
+module.exports = function MalSearchDetailItem(id, title, image = '', start_date = '정보없음', end_date = '정보없음',
     star, popularity, rank, synopsis,
-    status, genres, num_episodes, start_season = '0000', pictures=[] ,related_anime = {} , recommendations={},studios ={}) {
+    status, genres, num_episodes, start_season = '정보없음', pictures ,related_anime = {} , recommendations,studios) {
     this.id = id
     this.title = title
     this.image = image

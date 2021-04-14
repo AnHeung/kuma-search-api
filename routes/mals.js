@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const { errMsg, successMsg, successAndFetchData } = require('../util/errorHandle');
-const { getGenreList,searchAllItems, searchAnimeItems, searchAnimeDetailData, searchAnimeAllRankingItems, searchSeasonItems, searchScheduleItems, searchGenreItems } = require('../service/malService')
+const { getGenreList,searchAllItems, searchAnimeItems,searchJikanAnimeDetailData, searchAnimeDetailData, searchAnimeAllRankingItems, searchSeasonItems, searchScheduleItems, searchGenreItems } = require('../service/malService')
+
 
 router.get('/data', async (req, res) => {
 

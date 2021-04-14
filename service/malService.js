@@ -1,8 +1,10 @@
 const Axios = require('axios');
-const { MAL_ACCESS_TOKEN, MAL_CLIENT_ID, MAL_CLIENT_SECRET, MAL_BASE_URL, MAL_JIKAN_URL } = require('../appConstants');
-const { malAllParsing, malSearchParsing, malSeasonParsing, malJikanSeasonParsing, malSearchDetailParsing, malSearchRankingParsing, malScheduleParsing, malGenreParsing } = require('../util/parsing');
-const headers = { 'Authorization': `Bearer ${MAL_ACCESS_TOKEN}` }
+const { MAL_ACCESS_TOKEN, MAL_AUTH_URL, MAL_CLIENT_ID, MAL_CLIENT_SECRET, MAL_BASE_URL, MAL_JIKAN_URL, MAL_REFRESH_TOKEN } = require('../appConstants');
+
+const { malAllParsing, malSearchParsing, malSeasonParsing, malJikanSeasonParsing,
+    malSearchJikanDetailParsing, malSearchDetailParsing, malSearchRankingParsing, malScheduleParsing, malGenreParsing } = require('../util/parsing');
 const { getSeasonText, getYear, getScheduleText, getToday, getFourYearData } = require('../util/utils');
+const { updateMalConfig} = require('../util/file_utils');
 
 const searchAnimeItems = async (q, limit) => {
 
@@ -11,6 +13,7 @@ const searchAnimeItems = async (q, limit) => {
         return false
     }
     const params = { q, limit }
+    const headers = await getMalHeaders();
 
     return await Axios.get(MAL_BASE_URL, {
         params,
@@ -21,10 +24,7 @@ const searchAnimeItems = async (q, limit) => {
             if (!malItems || malItems && malItems.length === 0) return false
             return malSearchParsing(malItems)
         })
-        .catch(e => {
-            console.error(`searchAnimeItems err : ${e}`)
-            return false
-        })
+        .catch(catchErr("searchAnimeItems",()=>searchAnimeItems(q,limit)))
 }
 
 const searchAllItems = async (type, q, page, status, rated, genre, score, startDate, endDate, genre_exclude, limit, sort) => {
@@ -79,9 +79,7 @@ const searchAllItems = async (type, q, page, status, rated, genre, score, startD
 
 const searchAnimeRankingItems = async (type, page, ranking_type, limit) => {
 
-    return await Axios.get(`${MAL_JIKAN_URL}/top/${type}/${page}/${ranking_type}`, {
-        headers
-    })
+    return await Axios.get(`${MAL_JIKAN_URL}/top/${type}/${page}/${ranking_type}`)
         .then(data => {
             const malRankingItems = data.data.top
             console.log(`ranking_type : ${ranking_type} , data : ${data.data.top.length}`)
@@ -170,6 +168,8 @@ const searchSeasonItems = async (limit) => {
     const year = getYear();
     const params = { limit }
 
+    const headers = await getMalHeaders()
+
     return await Axios.get(`${MAL_BASE_URL}/season/${year}/${season}`, {
         params,
         headers
@@ -179,10 +179,7 @@ const searchSeasonItems = async (limit) => {
             if (!malSeasonItems || malSeasonItems && malSeasonItems.length === 0) return false
             return malSeasonParsing(malSeasonItems)
         })
-        .catch(e => {
-            console.error(`searchSeasonItems err : ${e}`)
-            return false
-        })
+        .catch(catchErr("searchSeasonItems" , ()=>searchSeasonItems(limit)))
 }
 
 const searchJikanSeasonItems = async (limit) => {
@@ -190,9 +187,7 @@ const searchJikanSeasonItems = async (limit) => {
     const season = getSeasonText();
     const year = getYear();
 
-    return await Axios.get(`${MAL_JIKAN_URL}/season/${year}/${season}`, {
-        headers
-    })
+    return await Axios.get(`${MAL_JIKAN_URL}/season/${year}/${season}`)
         .then(data => {
             const malSeasonItems = data.data.anime
             if (!malSeasonItems || malSeasonItems && malSeasonItems.length === 0) return false
@@ -268,11 +263,45 @@ const getGenreList = () => {
 }
 
 
+/**
+ * 
+/characters_staff	N/A	List of character and staff members
+/episodes	Page number (integer)	List of episodes
+/news	N/A	List of Related news
+/pictures	N/A	List of Related pictures
+/videos	N/A	List of Promotional Videos & episodes (if any)
+/stats	N/A	Related statistical information
+/forum	N/A	List of Related forum topics
+/moreinfo	N/A	A string of more information (if any)
+/reviews	Page number (integer)	List of Reviews written by users
+/recommendations	N/A	List of Recommendations and their weightage made by users
+/userupdates	Page number (integer)	List of the latest list updates made by users
+ */
+
+const searchJikanAnimeDetailData = async (id) => {
+
+    const type = "anime"
+
+    return await Axios.get(`${MAL_JIKAN_URL}/${type}/${id}`)
+        .then(async (data) => {
+            const malItems = data.data
+            if (!malItems || malItems && malItems.length === 0) return false
+            return await malSearchJikanDetailParsing(data.data);
+        })
+        .catch(e => {
+            console.error(`searchJikanAnimeDetailData err : ${e}`)
+            return false
+        })
+}
+
 const searchAnimeDetailData = async (id) => {
+
 
     const fields = 'id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank,popularity,num_list_users,num_scoring_users,nsfw,created_at,updated_at,media_type,status,genres,my_list_status,num_episodes,start_season,broadcast,source,average_episode_duration,rating,pictures,background,related_anime,related_manga,recommendations,studios,statistics'
 
     const params = { fields }
+
+    const headers = await getMalHeaders()
 
     return await Axios.get(`${MAL_BASE_URL}/${id}`, {
         params,
@@ -283,15 +312,48 @@ const searchAnimeDetailData = async (id) => {
             if (!malItems || malItems && malItems.length === 0) return false
             return await malSearchDetailParsing(data.data);
         })
-        .catch(e => {
-            console.error(`searchAnimeDetailData err : ${e}`)
-            return false
-        })
+        .catch(catchErr("searchAnimeDetailData", ()=>searchAnimeDetailData(id)))
 }
+
+const catchErr = (msg , callback) => {
+    return async (e) => {
+        const status = e.response.status
+            
+        //401 access_key 만료시 재등록 및 업데이트 로직
+        if (status && status === 401) {
+            const grant_type = "refresh_token"
+            const params = new URLSearchParams();
+            params.append('client_id', MAL_CLIENT_ID);
+            params.append('client_secret', MAL_CLIENT_SECRET);
+            params.append('grant_type', grant_type);
+            params.append('refresh_token', await MAL_REFRESH_TOKEN());
+
+            return await Axios.post(MAL_AUTH_URL, params)
+                .then(async data => {
+                     const result = data.data
+                     if(result)await updateMalConfig({access_token:result.access_token , refresh_token:result.refresh_token})
+                     return await callback();
+                })
+                .catch(err=>{
+                    console.error(`refresh_mal_token error : ${err}`)
+                    return false
+                }) 
+        }else{
+            console.error(`${msg} error : ${e}`)
+            return false
+        }
+    }
+}
+
+const getMalHeaders = async () => {
+    return { 'Authorization': `Bearer ${await MAL_ACCESS_TOKEN()}` };
+}
+
 
 module.exports = {
     searchAnimeItems: searchAnimeItems,
     searchAnimeDetailData: searchAnimeDetailData,
+    searchJikanAnimeDetailData: searchJikanAnimeDetailData,
     searchAnimeRankingItems: searchAnimeRankingItems,
     searchAnimeAllRankingItems: searchAnimeAllRankingItems,
     searchSeasonItems: searchSeasonItems,
