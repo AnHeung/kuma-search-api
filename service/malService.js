@@ -2,7 +2,7 @@ const Axios = require('axios');
 const { MAL_ACCESS_TOKEN, MAL_AUTH_URL, MAL_CLIENT_ID, MAL_CLIENT_SECRET, MAL_BASE_URL, MAL_JIKAN_URL, MAL_REFRESH_TOKEN } = require('../appConstants');
 
 const { malAllParsing, malSearchParsing, malSeasonParsing, malJikanSeasonParsing,
-    malSearchJikanDetailParsing, malSearchDetailParsing, malSearchRankingParsing,malSearchEpisodeParsing, malSearchVideoParsing,malScheduleParsing, malGenreParsing } = require('../util/parsing');
+    malSearchJikanDetailParsing, malSearchDetailParsing,malSearchCharacterParsing, malSearchRankingParsing,malSearchEpisodeParsing, malSearchVideoParsing,malScheduleParsing, malGenreParsing } = require('../util/parsing');
 const { getSeasonText, getYear, getScheduleText, getToday, getFourYearData } = require('../util/utils');
 const { updateMalConfig} = require('../util/file_utils');
 
@@ -297,6 +297,8 @@ const searchJikanAnimeDetailData = async (id) => {
 }
 
 
+
+
 const searchAnimeDetailData = async (id) => {
 
     const fields = 'id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank,popularity,num_list_users,num_scoring_users,nsfw,created_at,updated_at,media_type,status,genres,my_list_status,num_episodes,start_season,broadcast,source,average_episode_duration,rating,pictures,background,related_anime,related_manga,recommendations,studios,statistics'
@@ -314,7 +316,28 @@ const searchAnimeDetailData = async (id) => {
             if (!malItems || malItems && malItems.length === 0) return false
             return await malSearchDetailParsing(data.data);
         })
+        .then(async (result)=>{
+            const videos = await searchAnimeVideos(id)
+            if(videos)result.videos = videos;
+            return result
+        })
         .catch(catchErr("searchAnimeDetailData", ()=>searchAnimeDetailData(id)))
+}
+
+const searchAnimeCharcters = async(id)=>{
+
+    const type = "anime"
+
+    return await Axios.get(`${MAL_JIKAN_URL}/${type}/${id}/characters_staff`)
+        .then(data=>{
+            const characters = data4data.characters
+            if(!characters || characters && characters.length === 0) return false
+            return malSearchCharacterParsing(characters)
+        })
+        .catch(e=>{
+            console.error(`searchAnimeVideos error : ${e}`)
+            return false
+        })
 }
 
 const searchAnimeVideos = async (id)=>{
@@ -392,6 +415,7 @@ module.exports = {
     searchScheduleItems: searchScheduleItems,
     searchAnimeVideos: searchAnimeVideos,
     searchGenreItems: searchGenreItems,
+    searchAnimeCharcters:searchAnimeCharcters,
     searchAnimeEpisodes:searchAnimeEpisodes,
     searchAllItems: searchAllItems,
     getGenreList: getGenreList
