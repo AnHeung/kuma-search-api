@@ -124,6 +124,13 @@ const cleanText = (text) => {
     return text.replace(/([\t|\n])/gi, "").toString().trim()
 }
 
+const dateToFormat = (date) => {
+    if (!date) return "정보없음"
+    const format = "yyyy-MM-DD"
+    const formatDate = moment(date).format(format) || "정보없음"
+    return formatDate
+}
+
 const getFourYearData = () => {
     const currentYear = moment().year();
     const yearArr = [currentYear, currentYear - 1, currentYear - 2, currentYear - 3];
@@ -131,9 +138,9 @@ const getFourYearData = () => {
 
     return yearArr.map(year => {
         if (year === currentYear) {
-            return { category: year.toString(), categoryValue: `${moment(year.toString()).format(format)}~${moment().format(format)}}`}
+            return { category: year.toString(), categoryValue: `${moment(year.toString()).format(format)}~${moment().format(format)}}` }
         } else {
-            return { category: year.toString(), categoryValue: `${moment(year.toString()).format(format)}~${year}-12-31`}
+            return { category: year.toString(), categoryValue: `${moment(year.toString()).format(format)}~${year}-12-31` }
         }
     })
 }
@@ -171,6 +178,7 @@ module.exports = {
     getScheduleText: getScheduleText,
     getToday: getToday,
     appendImageText: appendImageText,
-    getFourYearData: getFourYearData
+    getFourYearData: getFourYearData,
+    dateToFormat: dateToFormat
 }
 

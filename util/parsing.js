@@ -3,7 +3,7 @@ const MalSearchItem = require('../model/MalSearchItem')
 const MalSearchDetailItem = require('../model/MalSearchDetailItem')
 const MalSearchDetailSimpleItem = require('../model/MalSearchDetailSimpleItem')
 const MalSearchRankingItem = require('../model/MalSearchRankingItem');
-const { cleanText, malTypeToKorea, appendImageText } = require('../util/utils');
+const { cleanText, malTypeToKorea, appendImageText, dateToFormat } = require('../util/utils');
 const MalSearchScheduleItem = require('../model/MalSearchScheduleItem');
 const MalSearchGenreItem = require('../model/MalSearchGenreItem');
 const MalSearchAllItem = require('../model/MalSearchAllItem');
@@ -135,15 +135,21 @@ const malSearchRankingParsing = (malItems, ranking_type, limit) => {
     }
 }
 
-const malSearchVideoParsing = (videoItems)=>{
-    return videoItems.map(({title, image_url ,video_url})=>{
-        return {title , image_url , video_url}
+const malSearchVideoParsing = (videoItems) => {
+    return videoItems.map(({ title, image_url, video_url }) => {
+        return { title, image_url, video_url }
     })
 }
 
-const malSearchEpisodeParsing = (episodeItems)=>{
-    return episodeItems.map(({episode_id, title, image_url ,aired,video_url})=>{
-        return {episode_id, title ,air_date :aired , image_url , video_url}
+const malSearchCharacterParsing = (characterItems) => {
+    return characterItems.map(({ mal_id, name, role, image_url, url }) => {
+        return { character_id: mal_id, name, role, image_url, url }
+    })
+}
+
+const malSearchEpisodeParsing = (episodeItems) => {
+    return episodeItems.map(({ episode_id, title, image_url, aired, video_url }) => {
+        return { episode_id, title, air_date: dateToFormat(aired), image_url, video_url }
     })
 }
 
@@ -159,9 +165,9 @@ const malSearchDetailParsing = async (searchDetailItem) => {
         const episodes = num_episodes ? num_episodes.toString() : "0"
         const pictureArr = pictures ? pictures.map(img => img.large) : []
         const image = main_picture && main_picture.large
-        
-        const genreArr = genres.map(({id,name})=>{
-            return {id:id && id.toString(), name}
+
+        const genreArr = genres.map(({ id, name }) => {
+            return { id: id && id.toString(), name }
         })
         const relatedAnimeArr = related_anime.map(({ node: { id, title, main_picture } }) => {
             const image = main_picture && main_picture.large
@@ -193,26 +199,26 @@ const malSearchDetailParsing = async (searchDetailItem) => {
 const malSearchJikanDetailParsing = async (searchDetailItem) => {
     try {
         //mean 별점수
-        const { mal_id, title, image_url ,start_date,end_date, score, popularity, rank, synopsis
-            , status, genres, start_season, episodes, related , studios } = searchDetailItem
+        const { mal_id, title, image_url, start_date, end_date, score, popularity, rank, synopsis
+            , status, genres, start_season, episodes, related, studios } = searchDetailItem
         const id = mal_id ? mal_id.toString() : "0"
         const rank_point = rank ? rank.toString() : "0"
         const startSeason = start_season ? start_season.year.toString() : start_date
         const star = score ? score.toString() : "0"
         const num_episodes = episodes ? episodes.toString() : "0"
         const image = image_url && appendImageText(image_url)
-        
-        const genreArr = genres.map(({mal_id,name})=>{
-            return {id:mal_id && mal_id.toString(), name}
+
+        const genreArr = genres.map(({ mal_id, name }) => {
+            return { id: mal_id && mal_id.toString(), name }
         })
 
-        const relatedAnimeArr = related && Object.keys(related).reduce((acc,key)=>{
-            related[key].filter(({type})=>type!='manga')
-            .forEach(({mal_id,name})=>{
-                acc.push(new MalSearchItem(mal_id, name, ""))
-            })
+        const relatedAnimeArr = related && Object.keys(related).reduce((acc, key) => {
+            related[key].filter(({ type }) => type != 'manga')
+                .forEach(({ mal_id, name }) => {
+                    acc.push(new MalSearchItem(mal_id, name, ""))
+                })
             return acc
-        },[])
+        }, [])
 
 
         const studioArr = studios.map(({ id, name }) => {
@@ -277,10 +283,11 @@ module.exports = {
     translateTextParsing: translateTextParsing,
     malScheduleParsing: malScheduleParsing,
     malGenreParsing: malGenreParsing,
-    malSearchVideoParsing:malSearchVideoParsing,
+    malSearchVideoParsing: malSearchVideoParsing,
     malAllParsing: malAllParsing,
-    malSearchEpisodeParsing:malSearchEpisodeParsing,
+    malSearchEpisodeParsing: malSearchEpisodeParsing,
+    malSearchCharacterParsing: malSearchCharacterParsing,
     malSeasonParsing: malSeasonParsing,
     malJikanSeasonParsing: malJikanSeasonParsing,
-    malSearchJikanDetailParsing:malSearchJikanDetailParsing
+    malSearchJikanDetailParsing: malSearchJikanDetailParsing
 }
