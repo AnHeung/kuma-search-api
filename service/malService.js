@@ -330,7 +330,7 @@ const searchAnimeCharcters = async(id)=>{
 
     return await Axios.get(`${MAL_JIKAN_URL}/${type}/${id}/characters_staff`)
         .then(data=>{
-            const characters = data4data.characters
+            const characters = data.data.characters
             if(!characters || characters && characters.length === 0) return false
             return malSearchCharacterParsing(characters)
         })
