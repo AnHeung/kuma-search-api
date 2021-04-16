@@ -147,6 +147,12 @@ const malSearchCharacterParsing = (characterItems) => {
     })
 }
 
+const malSearchCharacterPictureParsing = (characterItems) => {
+    return characterItems.map(({ large }) => {
+        return { image:large }
+    })
+}
+
 const malSearchEpisodeParsing = (episodeItems) => {
     return episodeItems.map(({ episode_id, title, image_url, aired, video_url }) => {
         return { episode_id, title, air_date: dateToFormat(aired), image_url, video_url }
@@ -285,6 +291,7 @@ module.exports = {
     malGenreParsing: malGenreParsing,
     malSearchVideoParsing: malSearchVideoParsing,
     malAllParsing: malAllParsing,
+    malSearchCharacterPictureParsing:malSearchCharacterPictureParsing,
     malSearchEpisodeParsing: malSearchEpisodeParsing,
     malSearchCharacterParsing: malSearchCharacterParsing,
     malSeasonParsing: malSeasonParsing,

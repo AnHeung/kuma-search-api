@@ -1,7 +1,7 @@
 const Axios = require('axios');
 const { MAL_ACCESS_TOKEN, MAL_AUTH_URL, MAL_CLIENT_ID, MAL_CLIENT_SECRET, MAL_BASE_URL, MAL_JIKAN_URL, MAL_REFRESH_TOKEN } = require('../appConstants');
 
-const { malAllParsing, malSearchParsing, malSeasonParsing, malJikanSeasonParsing,
+const { malAllParsing, malSearchParsing, malSeasonParsing, malJikanSeasonParsing,malSearchCharacterPictureParsing,
     malSearchJikanDetailParsing, malSearchDetailParsing,malSearchCharacterParsing, malSearchRankingParsing,malSearchEpisodeParsing, malSearchVideoParsing,malScheduleParsing, malGenreParsing } = require('../util/parsing');
 const { getSeasonText, getYear, getScheduleText, getToday, getFourYearData } = require('../util/utils');
 const { updateMalConfig} = require('../util/file_utils');
@@ -297,6 +297,22 @@ const searchJikanAnimeDetailData = async (id) => {
 }
 
 
+const searchCharacterPicture = async(character_id)=>{
+    
+    const type = "character"
+
+    return await Axios.get(`${MAL_JIKAN_URL}/${type}/${character_id}/pictures`)
+        .then(data=>{
+            const pictures = data.data.pictures
+            if(!pictures || pictures && pictures.length === 0) return false
+            return malSearchCharacterPictureParsing(pictures)
+        })
+        .catch(e=>{
+            console.error(`searchCharacterPicture error : ${e}`)
+            return false
+        })
+}
+
 
 
 const searchAnimeDetailData = async (id) => {
@@ -323,7 +339,7 @@ const searchAnimeDetailData = async (id) => {
         })
         .then(async (result)=>{
             const characters = await searchAnimeCharcters(id)
-            if(characters)result.characters = characters;
+            if(characters)result.characters = characters.splice(0,10);
             return result
         })
         .catch(catchErr("searchAnimeDetailData", ()=>searchAnimeDetailData(id)))
@@ -417,6 +433,7 @@ module.exports = {
     searchAnimeRankingItems: searchAnimeRankingItems,
     searchAnimeAllRankingItems: searchAnimeAllRankingItems,
     searchSeasonItems: searchSeasonItems,
+    searchCharacterPicture:searchCharacterPicture,
     searchScheduleItems: searchScheduleItems,
     searchAnimeVideos: searchAnimeVideos,
     searchGenreItems: searchGenreItems,
