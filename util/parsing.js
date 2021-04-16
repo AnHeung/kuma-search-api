@@ -143,7 +143,7 @@ const malSearchVideoParsing = (videoItems) => {
 
 const malSearchCharacterParsing = (characterItems) => {
     return characterItems.map(({ mal_id, name, role, image_url, url }) => {
-        return { character_id: mal_id, name, role, image_url, url }
+        return { character_id: mal_id && mal_id.toString(), name, role, image_url, url }
     })
 }
 
