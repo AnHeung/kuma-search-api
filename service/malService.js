@@ -314,11 +314,16 @@ const searchAnimeDetailData = async (id) => {
         .then(async (data) => {
             const malItems = data.data
             if (!malItems || malItems && malItems.length === 0) return false
-            return await malSearchDetailParsing(data.data);
+            return await malSearchDetailParsing(malItems);
         })
         .then(async (result)=>{
             const videos = await searchAnimeVideos(id)
             if(videos)result.videos = videos;
+            return result
+        })
+        .then(async (result)=>{
+            const characters = await searchAnimeCharcters(id)
+            if(characters)result.characters = characters;
             return result
         })
         .catch(catchErr("searchAnimeDetailData", ()=>searchAnimeDetailData(id)))
