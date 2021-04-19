@@ -2,6 +2,7 @@ const GoogleSearch = require('../model/googleSearch')
 const MalSearchItem = require('../model/MalSearchItem')
 const MalSearchDetailItem = require('../model/MalSearchDetailItem')
 const MalSearchDetailSimpleItem = require('../model/MalSearchDetailSimpleItem')
+const MalSearchCharacterDetailItem = require('../model/MalSearchCharacterDetailItem')
 const MalSearchRankingItem = require('../model/MalSearchRankingItem');
 const { cleanText, malTypeToKorea, appendImageText, dateToFormat } = require('../util/utils');
 const MalSearchScheduleItem = require('../model/MalSearchScheduleItem');
@@ -145,6 +146,27 @@ const malSearchCharacterParsing = (characterItems) => {
     return characterItems.map(({ mal_id, name, role, image_url, url }) => {
         return { character_id: mal_id && mal_id.toString(), name, role, image_url, url }
     })
+}
+
+const malSearchCharacterDetailParsing = ({url, image_url ,member_favorites ,mal_id ,name, name_kanji, nicknames, about,animeography, voice_actors}) => {
+
+    const relate_animes = animeography && animeography.map(({mal_id ,name ,image_url})=>{
+        return {id :mal_id && mal_id.toString() , title:name, image_url}
+    })
+    const nickname = nicknames && nicknames.reduce((acc,nick)=>{
+
+        if(!acc) acc = nick 
+        else acc += `,${nick}`
+        return acc
+    }, "")
+
+    const voice_actors_arr = voice_actors && voice_actors.map(({mal_id ,name ,image_url, language , url})=>{
+        return {id :mal_id && mal_id.toString(),name, image_url , country:language , url}
+    })
+
+    return new MalSearchCharacterDetailItem(mal_id && mal_id.toString(),name, name_kanji,nickname,about,image_url,url
+        ,relate_animes, voice_actors_arr,member_favorites);
+
 }
 
 const malSearchCharacterPictureParsing = (characterItems) => {
@@ -294,6 +316,7 @@ module.exports = {
     malSearchCharacterPictureParsing:malSearchCharacterPictureParsing,
     malSearchEpisodeParsing: malSearchEpisodeParsing,
     malSearchCharacterParsing: malSearchCharacterParsing,
+    malSearchCharacterDetailParsing:malSearchCharacterDetailParsing,
     malSeasonParsing: malSeasonParsing,
     malJikanSeasonParsing: malJikanSeasonParsing,
     malSearchJikanDetailParsing: malSearchJikanDetailParsing

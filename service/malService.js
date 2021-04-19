@@ -1,7 +1,7 @@
 const Axios = require('axios');
 const { MAL_ACCESS_TOKEN, MAL_AUTH_URL, MAL_CLIENT_ID, MAL_CLIENT_SECRET, MAL_BASE_URL, MAL_JIKAN_URL, MAL_REFRESH_TOKEN } = require('../appConstants');
 
-const { malAllParsing, malSearchParsing, malSeasonParsing, malJikanSeasonParsing,malSearchCharacterPictureParsing,
+const { malAllParsing, malSearchParsing, malSeasonParsing, malJikanSeasonParsing,malSearchCharacterPictureParsing,malSearchCharacterDetailParsing,
     malSearchJikanDetailParsing, malSearchDetailParsing,malSearchCharacterParsing, malSearchRankingParsing,malSearchEpisodeParsing, malSearchVideoParsing,malScheduleParsing, malGenreParsing } = require('../util/parsing');
 const { getSeasonText, getYear, getScheduleText, getToday, getFourYearData } = require('../util/utils');
 const { updateMalConfig} = require('../util/file_utils');
@@ -361,6 +361,20 @@ const searchAnimeCharcters = async(id)=>{
         })
 }
 
+const searchAnimeCharcterDetail = async(id)=>{
+
+    return await Axios.get(`${MAL_JIKAN_URL}/character/${id}`)
+        .then(data=>{
+            const character_info = data.data
+            if(!character_info) return character_info
+            return malSearchCharacterDetailParsing(character_info)
+        })
+        .catch(e=>{
+            console.error(`searchAnimeVideos error : ${e}`)
+            return false
+        })
+}
+
 const searchAnimeVideos = async (id)=>{
     const type = "anime"
 
@@ -437,6 +451,7 @@ module.exports = {
     searchScheduleItems: searchScheduleItems,
     searchAnimeVideos: searchAnimeVideos,
     searchGenreItems: searchGenreItems,
+    searchAnimeCharcterDetail:searchAnimeCharcterDetail,
     searchAnimeCharcters:searchAnimeCharcters,
     searchAnimeEpisodes:searchAnimeEpisodes,
     searchAllItems: searchAllItems,
