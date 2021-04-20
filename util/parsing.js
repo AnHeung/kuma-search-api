@@ -183,7 +183,12 @@ const malSearchPersonParsing = ({mal_id , name , alternate_names,about, family_n
         const characterData = {character_id:character.mal_id && character.mal_id.toString(), url:character.url ,image_url:character.image_url , name:character.name}
         return {role, anime:{mal_id: mal_id && mal_id.toString() , url ,image_url , name} ,character:characterData}
     })
-    return new MalSearchPersonItem(mal_id && mal_id.toString(), name, family_name ,given_name ,birthday ,alternate_names,image_url ,url ,actorRoleArr, cleanText(about), member_favorites)
+    const alternateName = alternate_names.reduce((acc,name)=>{
+        if(!acc) acc = name
+        else acc += `,${name}`
+        return acc
+    },"")
+    return new MalSearchPersonItem(mal_id && mal_id.toString(), name||"정보없음", family_name ||"정보없음" ,given_name ||"정보없음" ,birthday || "정보없음" ,alternateName,image_url ,url ,actorRoleArr, cleanText(about), member_favorites)
 }
 
 const malSearchEpisodeParsing = (episodeItems)  => {
