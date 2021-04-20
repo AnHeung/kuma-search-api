@@ -8,6 +8,7 @@ const { cleanText, malTypeToKorea, appendImageText, dateToFormat } = require('..
 const MalSearchScheduleItem = require('../model/MalSearchScheduleItem');
 const MalSearchGenreItem = require('../model/MalSearchGenreItem');
 const MalSearchAllItem = require('../model/MalSearchAllItem');
+const { lang } = require('moment')
 
 
 const googleSearchParsing = (searchObj, limit) => {
@@ -160,11 +161,13 @@ const malSearchCharacterDetailParsing = ({url, image_url ,member_favorites ,mal_
         return acc
     }, "")
 
-    const voice_actors_arr = voice_actors && voice_actors.map(({mal_id ,name ,image_url, language , url})=>{
+    const voice_actors_arr = voice_actors && voice_actors
+    .filter(({language})=>language === "Japanese" || language === 'Korean')
+    .map(({mal_id ,name ,image_url, language , url})=>{
         return {id :mal_id && mal_id.toString(),name, image_url , country:language , url}
     })
 
-    return new MalSearchCharacterDetailItem(mal_id && mal_id.toString(),name, name_kanji,nickname,about,image_url,url
+    return new MalSearchCharacterDetailItem(mal_id && mal_id.toString(),name, name_kanji,nickname,cleanText(about),image_url,url
         ,relate_animes, voice_actors_arr,member_favorites && member_favorites.toString());
 
 }
@@ -214,7 +217,7 @@ const malSearchDetailParsing = async (searchDetailItem) => {
         });
 
         const { translateText } = require('../service/translateService')
-        const koreaSynopsis = await translateText('ko', cleanText(synopsis)) || synopsis
+        const koreaSynopsis = await translateText('ko', cleanText(synopsis)) || cleanText(synopsis)
 
         return new MalSearchDetailItem(mal_id, title, image, start_date, end_date, star,
             popularity.toString(), score, koreaSynopsis, status, genreArr, episodes, startSeason, pictureArr, relatedAnimeArr, recommendationsArr, studioArr)
