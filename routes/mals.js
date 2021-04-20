@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { errMsg, successMsg, successAndFetchData } = require('../util/errorHandle');
-const { getGenreList, searchAllItems, searchAnimeVideos, searchAnimeItems, searchJikanAnimeDetailData,searchAnimeCharcters,
+const { getGenreList, searchAllItems, searchAnimeVideos, searchAnimeItems, searchJikanAnimeDetailData,searchAnimeCharcters,searchPersonData,
     searchAnimeDetailData, searchAnimeAllRankingItems, searchSeasonItems,searchAnimeEpisodes,searchCharacterPicture,searchAnimeCharcterDetail,
     searchScheduleItems, searchGenreItems } = require('../service/malService')
 
@@ -102,6 +102,26 @@ router.get('/videos/:id', async (req, res) => {
         }
     } catch (e) {
         console.error(`MAL search videos 아이디 err: ${e}`)
+        return res.status(404).send(errMsg(`${e}`))
+    }
+})
+
+router.get('/person/:id', async (req, res) => {
+
+    try {
+        const id = req.params.id
+        if (id) {
+            const result = await searchPersonData(id)
+            return result
+                ? res.status(200).send(successAndFetchData('MAL 인물 검색 성공.', result))
+                : res.status(200).send(errMsg('MAL 인물 검색 실패.'))
+
+        } else {
+            console.error('MAL 인물 아이디 파라미터 입력안됨.')
+            return res.status(200).send(errMsg('MAL 인물 아이디 파라미터 입력 안됨.'))
+        }
+    } catch (e) {
+        console.error(`MAL search person 아이디 err: ${e}`)
         return res.status(404).send(errMsg(`${e}`))
     }
 })

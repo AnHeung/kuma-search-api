@@ -1,8 +1,8 @@
 const GoogleSearch = require('../model/googleSearch')
 const MalSearchItem = require('../model/MalSearchItem')
 const MalSearchDetailItem = require('../model/MalSearchDetailItem')
-const MalSearchDetailSimpleItem = require('../model/MalSearchDetailSimpleItem')
 const MalSearchCharacterDetailItem = require('../model/MalSearchCharacterDetailItem')
+const MalSearchPersonItem = require('../model/MalSearchPersonItem')
 const MalSearchRankingItem = require('../model/MalSearchRankingItem');
 const { cleanText, malTypeToKorea, appendImageText, dateToFormat } = require('../util/utils');
 const MalSearchScheduleItem = require('../model/MalSearchScheduleItem');
@@ -178,7 +178,11 @@ const malSearchCharacterPictureParsing = (characterItems) => {
     })
 }
 
-const malSearchEpisodeParsing = (episodeItems) => {
+const malSearchPersonParsing = ({mal_id , name , alternate_names,about, family_name, given_name, voice_acting_roles,url ,image_url,birthday,member_favorites })=>{
+    return new MalSearchPersonItem(mal_id && mal_id.toString(), name, family_name ,given_name ,birthday ,alternate_names,image_url ,url ,voice_acting_roles, about, member_favorites)
+}
+
+const malSearchEpisodeParsing = (episodeItems)  => {
     return episodeItems.map(({ episode_id, title, image_url, aired, video_url }) => {
         return { episode_id, title, air_date: dateToFormat(aired), image_url, video_url }
     })
@@ -319,6 +323,7 @@ module.exports = {
     malSearchCharacterPictureParsing:malSearchCharacterPictureParsing,
     malSearchEpisodeParsing: malSearchEpisodeParsing,
     malSearchCharacterParsing: malSearchCharacterParsing,
+    malSearchPersonParsing:malSearchPersonParsing,
     malSearchCharacterDetailParsing:malSearchCharacterDetailParsing,
     malSeasonParsing: malSeasonParsing,
     malJikanSeasonParsing: malJikanSeasonParsing,
