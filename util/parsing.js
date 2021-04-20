@@ -179,7 +179,11 @@ const malSearchCharacterPictureParsing = (characterItems) => {
 }
 
 const malSearchPersonParsing = ({mal_id , name , alternate_names,about, family_name, given_name, voice_acting_roles,url ,image_url,birthday,member_favorites })=>{
-    return new MalSearchPersonItem(mal_id && mal_id.toString(), name, family_name ,given_name ,birthday ,alternate_names,image_url ,url ,voice_acting_roles, about, member_favorites)
+    const actorRoleArr = voice_acting_roles && voice_acting_roles.map(({role, anime:{mal_id,url ,image_url ,name}, character})=>{
+        const characterData = {character_id:character.mal_id && character.mal_id.toString(), url:character.url ,image_url:character.image_url , name:character.name}
+        return {role, anime:{mal_id: mal_id && mal_id.toString() , url ,image_url , name} ,character:characterData}
+    })
+    return new MalSearchPersonItem(mal_id && mal_id.toString(), name, family_name ,given_name ,birthday ,alternate_names,image_url ,url ,actorRoleArr, cleanText(about), member_favorites)
 }
 
 const malSearchEpisodeParsing = (episodeItems)  => {
