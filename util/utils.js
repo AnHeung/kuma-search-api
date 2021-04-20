@@ -121,7 +121,7 @@ const getToday = () => {
 
 const cleanText = (text) => {
     if (isEmpty(text) || !isEmpty(text) && typeof text !== 'string') return ''
-    return text.replace(/([\t|\r|\n|\\n])/gmi, "").toString().trim()
+    return text.replace(/(\\n)/g, "").toString().trim()
 }
 
 const dateToFormat = (date) => {
