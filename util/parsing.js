@@ -188,7 +188,7 @@ const malSearchPersonParsing = ({mal_id , name , alternate_names,about, family_n
         else acc += `,${name}`
         return acc
     },"")
-    return new MalSearchPersonItem(mal_id && mal_id.toString(), name||"정보없음", family_name ||"정보없음" ,given_name ||"정보없음" ,birthday || "정보없음" ,alternateName,image_url ,url ,actorRoleArr, cleanText(about), member_favorites)
+    return new MalSearchPersonItem(mal_id && mal_id.toString(), name||"정보없음", family_name ||"정보없음" ,given_name ||"정보없음" ,birthday || "정보없음" ,alternateName,image_url ,url ,actorRoleArr, cleanText(about), member_favorites.toString())
 }
 
 const malSearchEpisodeParsing = (episodeItems)  => {
