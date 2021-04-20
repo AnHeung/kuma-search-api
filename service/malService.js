@@ -369,6 +369,11 @@ const searchAnimeCharcterDetail = async(id)=>{
             if(!character_info) return character_info
             return malSearchCharacterDetailParsing(character_info)
         })
+        .then(async result=>{
+            const pictures =  await searchCharacterPicture(id)
+            if(pictures && pictures.length > 0) result.pictures = pictures
+            return result
+        })
         .catch(e=>{
             console.error(`searchAnimeVideos error : ${e}`)
             return false
