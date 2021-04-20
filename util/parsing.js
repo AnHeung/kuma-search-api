@@ -168,7 +168,7 @@ const malSearchCharacterDetailParsing = ({url, image_url ,member_favorites ,mal_
     })
 
     return new MalSearchCharacterDetailItem(mal_id && mal_id.toString(),name, name_kanji,nickname,cleanText(about),image_url,url
-        ,relate_animes, voice_actors_arr,member_favorites && member_favorites.toString());
+        ,relate_animes, voice_actors_arr,member_favorites.toString());
 
 }
 
