@@ -27,11 +27,7 @@ const searchAnimeItems = async (q, limit) => {
         .catch(catchErr("searchAnimeItems",()=>searchAnimeItems(q,limit)))
 }
 
-const searchAllItems = async (type, q, page, status, rated, genre, score, startDate, endDate, genre_exclude, limit, sort) => {
-
-    const start_date = startDate || "2000-01-01"
-    const end_date = endDate || getToday()
-    const order_by = "start_date"
+const searchAllItems = async (type, q, page, status, rated, genre, score, start_date, end_date, genre_exclude, limit, sort, order_by) => {
 
     const params = { q, page, status, rated, genre, score, start_date, end_date, genre_exclude: "1", limit, sort, order_by }
     const genreAxios = Axios.get(`${MAL_JIKAN_URL}/search/${type}`, { params })

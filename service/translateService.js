@@ -10,7 +10,7 @@ const headers = {
     'X-Naver-Client-Secret': `${NAVER_PAPAGO_CLIENT_SECRET}`
 }
 
-const Japanese = 'jp'
+const Japanese = 'ja-JP'
 
 const getAnimeListToEnglish = async (query, limit) => {
     const languageTitle = await getTvShowTitle(query, Japanese)

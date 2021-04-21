@@ -274,8 +274,9 @@ router.get('/all', async (req, res) => {
         const genre_exclude = req.query.genre_exclude || undefined
         const limit = req.query.limit || undefined
         const sort = req.query.sort || undefined
+        const order_by = req.query.sort || undefined
 
-        const allResult = await searchAllItems(type, q, page, status, rated, genre, score, startDate, endDate, genre_exclude, limit, sort);
+        const allResult = await searchAllItems(type, q, page, status, rated, genre, score, startDate, endDate, genre_exclude, limit, sort,order_by);
 
         return allResult
             ? res.status(200).send(successAndFetchData('데이터 검색 성공', allResult))
