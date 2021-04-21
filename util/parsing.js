@@ -179,11 +179,17 @@ const malSearchCharacterPictureParsing = (characterItems) => {
 }
 
 const malSearchPersonParsing = ({ mal_id, name, alternate_names, about, family_name, given_name, voice_acting_roles, url, image_url, birthday, member_favorites }) => {
-    const actorRoleArr = voice_acting_roles && voice_acting_roles.reduce((acc, { role, anime: { mal_id, url, image_url, name }, character }) => {
+    const actorRoleArr = voice_acting_roles && voice_acting_roles.reduce((acc, { role, anime, character }) => {
 
-        if (acc.length === 0 || !acc.find(data => data.character.character_id === character.mal_id.toString())) {
-            const characterData = { character_id: character.mal_id && character.mal_id.toString(), url: character.url, image_url: character.image_url, name: character.name }
-            acc.push({ role, anime: { mal_id: mal_id && mal_id.toString(), url, image_url, name }, character: characterData })
+        const hasAnime = acc.find(data => {
+            return data.anime.mal_id === anime.mal_id.toString()
+        })
+        const hasCharacter = acc.find(data =>{
+            return data.character.character_id === character.mal_id.toString()
+        })
+
+        if (acc.length === 0 || !hasAnime && !hasCharacter){
+            acc.push({ role, anime: { mal_id: mal_id && mal_id.toString(), url, image_url, name }, character: { character_id: character.mal_id && character.mal_id.toString(), url: character.url, image_url: character.image_url, name: character.name } })
         }
         return acc;
     }, [])
