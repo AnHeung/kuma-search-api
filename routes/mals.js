@@ -274,7 +274,7 @@ router.get('/all', async (req, res) => {
         const genre_exclude = req.query.genre_exclude || undefined
         const limit = req.query.limit || undefined
         const sort = req.query.sort || undefined
-        const order_by = req.query.sort || undefined
+        const order_by = req.query.order_by || undefined
 
         const allResult = await searchAllItems(type, q, page, status, rated, genre, score, startDate, endDate, genre_exclude, limit, sort,order_by);
 
