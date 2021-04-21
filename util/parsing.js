@@ -184,12 +184,13 @@ const malSearchPersonParsing = ({ mal_id, name, alternate_names, about, family_n
         const hasAnime = acc.find(data => {
             return data.anime.mal_id === anime.mal_id.toString()
         })
+        
         const hasCharacter = acc.find(data =>{
             return data.character.character_id === character.mal_id.toString()
         })
 
         if (acc.length === 0 || !hasAnime && !hasCharacter){
-            acc.push({ role, anime: { mal_id: mal_id && mal_id.toString(), url:anime.url, image_url:anime.image_url, name:anime.name }, character: { character_id: character.mal_id && character.mal_id.toString(), url: character.url, image_url: character.image_url, name: character.name } })
+            acc.push({ role, anime: { mal_id: anime.mal_id && anime.mal_id.toString(), url:anime.url, image_url:anime.image_url, name:anime.name }, character: { character_id: character.mal_id && character.mal_id.toString(), url: character.url, image_url: character.image_url, name: character.name } })
         }
         return acc;
     }, [])
