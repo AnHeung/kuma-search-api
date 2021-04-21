@@ -149,49 +149,53 @@ const malSearchCharacterParsing = (characterItems) => {
     })
 }
 
-const malSearchCharacterDetailParsing = ({url, image_url ,member_favorites ,mal_id ,name, name_kanji, nicknames, about,animeography, voice_actors}) => {
+const malSearchCharacterDetailParsing = ({ url, image_url, member_favorites, mal_id, name, name_kanji, nicknames, about, animeography, voice_actors }) => {
 
-    const relate_animes = animeography && animeography.map(({mal_id ,name ,image_url})=>{
-        return {id :mal_id && mal_id.toString() , title:name, image_url}
+    const relate_animes = animeography && animeography.map(({ mal_id, name, image_url }) => {
+        return { id: mal_id && mal_id.toString(), title: name, image_url }
     })
-    const nickname = nicknames && nicknames.reduce((acc,nick)=>{
+    const nickname = nicknames && nicknames.reduce((acc, nick) => {
 
-        if(!acc) acc = nick 
+        if (!acc) acc = nick
         else acc += `,${nick}`
         return acc
     }, "")
 
     const voice_actors_arr = voice_actors && voice_actors
-    .filter(({language})=>language === "Japanese" || language === 'Korean')
-    .map(({mal_id ,name ,image_url, language , url})=>{
-        return {id :mal_id && mal_id.toString(),name, image_url , country:language , url}
-    })
+        .filter(({ language }) => language === "Japanese" || language === 'Korean')
+        .map(({ mal_id, name, image_url, language, url }) => {
+            return { id: mal_id && mal_id.toString(), name, image_url, country: language, url }
+        })
 
-    return new MalSearchCharacterDetailItem(mal_id && mal_id.toString(),name, name_kanji,nickname,cleanText(about),image_url,url
-        ,relate_animes, voice_actors_arr,member_favorites.toString());
+    return new MalSearchCharacterDetailItem(mal_id && mal_id.toString(), name, name_kanji, nickname, cleanText(about), image_url, url
+        , relate_animes, voice_actors_arr, member_favorites.toString());
 
 }
 
 const malSearchCharacterPictureParsing = (characterItems) => {
     return characterItems.map(({ large }) => {
-        return { image:large }
+        return { image: large }
     })
 }
 
-const malSearchPersonParsing = ({mal_id , name , alternate_names,about, family_name, given_name, voice_acting_roles,url ,image_url,birthday,member_favorites })=>{
-    const actorRoleArr = voice_acting_roles && voice_acting_roles.map(({role, anime:{mal_id,url ,image_url ,name}, character})=>{
-        const characterData = {character_id:character.mal_id && character.mal_id.toString(), url:character.url ,image_url:character.image_url , name:character.name}
-        return {role, anime:{mal_id: mal_id && mal_id.toString() , url ,image_url , name} ,character:characterData}
-    })
-    const alternateName = alternate_names.reduce((acc,name)=>{
-        if(!acc) acc = name
+const malSearchPersonParsing = ({ mal_id, name, alternate_names, about, family_name, given_name, voice_acting_roles, url, image_url, birthday, member_favorites }) => {
+    const actorRoleArr = voice_acting_roles && voice_acting_roles.reduce((acc, { role, anime: { mal_id, url, image_url, name }, character }) => {
+
+        if (acc.length === 0 || !acc.find(data => data.character.character_id === character.mal_id.toString())) {
+            const characterData = { character_id: character.mal_id && character.mal_id.toString(), url: character.url, image_url: character.image_url, name: character.name }
+            acc.push({ role, anime: { mal_id: mal_id && mal_id.toString(), url, image_url, name }, character: characterData })
+        }
+        return acc;
+    }, [])
+    const alternateName = alternate_names.reduce((acc, name) => {
+        if (!acc) acc = name
         else acc += `,${name}`
         return acc
-    },"")
-    return new MalSearchPersonItem(mal_id && mal_id.toString(), name||"정보없음", family_name ||"정보없음" ,given_name ||"정보없음" ,birthday || "정보없음" ,alternateName,image_url ,url ,actorRoleArr, cleanText(about), member_favorites.toString())
+    }, "")
+    return new MalSearchPersonItem(mal_id && mal_id.toString(), name || "정보없음", family_name || "정보없음", given_name || "정보없음", birthday || "정보없음", alternateName, image_url, url, actorRoleArr, cleanText(about), member_favorites.toString())
 }
 
-const malSearchEpisodeParsing = (episodeItems)  => {
+const malSearchEpisodeParsing = (episodeItems) => {
     return episodeItems.map(({ episode_id, title, image_url, aired, video_url }) => {
         return { episode_id, title, air_date: dateToFormat(aired), image_url, video_url }
     })
@@ -329,11 +333,11 @@ module.exports = {
     malGenreParsing: malGenreParsing,
     malSearchVideoParsing: malSearchVideoParsing,
     malAllParsing: malAllParsing,
-    malSearchCharacterPictureParsing:malSearchCharacterPictureParsing,
+    malSearchCharacterPictureParsing: malSearchCharacterPictureParsing,
     malSearchEpisodeParsing: malSearchEpisodeParsing,
     malSearchCharacterParsing: malSearchCharacterParsing,
-    malSearchPersonParsing:malSearchPersonParsing,
-    malSearchCharacterDetailParsing:malSearchCharacterDetailParsing,
+    malSearchPersonParsing: malSearchPersonParsing,
+    malSearchCharacterDetailParsing: malSearchCharacterDetailParsing,
     malSeasonParsing: malSeasonParsing,
     malJikanSeasonParsing: malJikanSeasonParsing,
     malSearchJikanDetailParsing: malSearchJikanDetailParsing

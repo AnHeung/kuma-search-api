@@ -324,7 +324,7 @@ const searchPersonData = async(person_id)=>{
             return malSearchPersonParsing(personData)
         })
         .catch(e=>{
-            console.error(`searchCharacterPicture error : ${e}`)
+            console.error(`searchPersonData error : ${e}`)
             return false
         })
 }
