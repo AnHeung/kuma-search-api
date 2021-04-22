@@ -164,7 +164,8 @@ const searchSeasonItems = async (limit) => {
 
     const season = getSeasonText();
     const year = getYear();
-    const params = { limit }
+    const sort = "anime_num_list_users"
+    const params = { limit ,sort}
 
     const headers = await getMalHeaders()
 
