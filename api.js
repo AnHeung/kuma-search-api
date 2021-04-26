@@ -3,10 +3,10 @@ require('dotenv-flow').config({
     node_env: process.env.NODE_ENV || 'dev',
     silent: true
 });
+const { getSearchCache } = require('./service/apiService')
+const { errMsg, successMsg, successAndFetchData } = require('./util/errorHandle');
 
 const express = require('express')
-const mongoose = require('mongoose')
-const bodyParser = require('body-parser')
 const morgan = require('morgan');
 const app = express();
 const port = process.env.PORT || 4506
@@ -18,21 +18,24 @@ if (process.env.NODE_ENV === "prod") {
     app.use(morgan("dev"));
 }
 app.use(express.static('public'))
-app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }))
-app.use(bodyParser.json({ limit: '50mb' }))
-
-mongoose.Promise = global.Promise
-
-mongoose.connect(process.env.MONGO_URI, {
-    useUnifiedTopology: true
-    , useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false
-})
-    .then(() => console.log('Successfully connect to mongodb'))
-    .catch(err => console.error(err))
+app.use(express.urlencoded({ extended: true, limit: '50mb' }))
+app.use(express.json({ limit: '50mb' }))
 
 
 app.use('/google', require('./routes/googles'))
-app.use('/mal', require('./routes/mals'))
+app.use('/mal', async (req, res, next) => {
+    try {
+        const baseUrl = req.originalUrl
+        if (baseUrl) {
+            const result = await getSearchCache(baseUrl)
+            if (result) return res.status(200).send(successAndFetchData('MAL Seach Cache 검색 성공.', result))
+            return next()
+        }
+    } catch (e) {
+        console.error(`mal middleWare error : ${e}`)
+        return next()
+    }
+}, require('./routes/mals'))
 app.use('/tmdb', require('./routes/tmdbs'))
 app.use('/translate', require('./routes/translates'))
 

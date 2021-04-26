@@ -1,9 +1,9 @@
 const router = require('express').Router();
 const { errMsg, successMsg, successAndFetchData } = require('../util/errorHandle');
-const { getGenreList, searchAllItems, searchAnimeVideos, searchAnimeItems, searchJikanAnimeDetailData,searchAnimeCharcters,searchPersonData,
-    searchAnimeDetailData, searchAnimeAllRankingItems, searchSeasonItems,searchAnimeEpisodes,searchCharacterPicture,searchAnimeCharcterDetail,
+const { getGenreList, searchAllItems, searchAnimeVideos, searchAnimeItems, searchJikanAnimeDetailData, searchAnimeCharcters, searchPersonData,
+    searchAnimeDetailData, searchAnimeAllRankingItems, searchSeasonItems, searchAnimeEpisodes, searchCharacterPicture, searchAnimeCharcterDetail,
     searchScheduleItems, searchGenreItems } = require('../service/malService')
-
+const { updateSearchCache } = require('../service/apiService')
 
 router.get('/data', async (req, res) => {
 
@@ -27,17 +27,13 @@ router.get('/data', async (req, res) => {
 router.get('/character/pictures/:id', async (req, res) => {
 
     try {
-        const id = req.params.id
-        if (id) {
-            const result = await searchCharacterPicture(id)
-            return result
-                ? res.status(200).send(successAndFetchData('MAL characters picture 검색 성공.', result))
-                : res.status(200).send(errMsg('MAL characters picture  검색 실패.'))
+        const result = await searchCharacterPicture(id)
 
-        } else {
-            console.error('MAL 캐릭터 아이디 파라미터 입력안됨.')
-            return res.status(200).send(errMsg('MAL 캐릭터 아이디 파라미터 입력 안됨.'))
+        if (result) {
+            await updateSearchCache(req.originalUrl, result);
+            return res.status(200).send(successAndFetchData('MAL characters picture 검색 성공.', result))
         }
+        return res.status(200).send(errMsg('MAL characters picture  검색 실패.'))
     } catch (e) {
         console.error(`MAL search characters 아이디 err: ${e}`)
         return res.status(404).send(errMsg(`${e}`))
@@ -48,16 +44,13 @@ router.get('/character/:id', async (req, res) => {
 
     try {
         const id = req.params.id
-        if (id) {
-            const result = await searchAnimeCharcterDetail(id)
-            return result
-                ? res.status(200).send(successAndFetchData('MAL character 검색 성공.', result))
-                : res.status(200).send(errMsg('MAL character 검색 실패.'))
+        const result = await searchAnimeCharcterDetail(id)
 
-        } else {
-            console.error('MAL 아이디 파라미터 입력안됨.')
-            return res.status(200).send(errMsg('MAL 아이디 파라미터 입력 안됨.'))
+        if (result) {
+            await updateSearchCache(req.originalUrl, result);
+            return res.status(200).send(successAndFetchData('MAL character 검색 성공.', result))
         }
+        return res.status(200).send(errMsg('MAL character 검색 실패.'))
     } catch (e) {
         console.error(`MAL search characters 아이디 err: ${e}`)
         return res.status(404).send(errMsg(`${e}`))
@@ -68,16 +61,14 @@ router.get('/detail/character/:id', async (req, res) => {
 
     try {
         const id = req.params.id
-        if (id) {
-            const result = await searchAnimeCharcters(id)
-            return result
-                ? res.status(200).send(successAndFetchData('MAL characters 검색 성공.', result))
-                : res.status(200).send(errMsg('MAL characters 검색 실패.'))
+        const result = await searchAnimeCharcters(id)
 
-        } else {
-            console.error('MAL 아이디 파라미터 입력안됨.')
-            return res.status(200).send(errMsg('MAL 아이디 파라미터 입력 안됨.'))
+        if (result) {
+            await updateSearchCache(req.originalUrl, result);
+            return res.status(200).send(successAndFetchData('MAL characters 검색 성공.', result))
         }
+        return res.status(200).send(errMsg('MAL characters 검색 실패.'))
+
     } catch (e) {
         console.error(`MAL search characters 아이디 err: ${e}`)
         return res.status(404).send(errMsg(`${e}`))
@@ -90,16 +81,14 @@ router.get('/videos/:id', async (req, res) => {
 
     try {
         const id = req.params.id
-        if (id) {
-            const result = await searchAnimeVideos(id)
-            return result
-                ? res.status(200).send(successAndFetchData('MAL 비디오 검색 성공.', result))
-                : res.status(200).send(errMsg('MAL 비디오 검색 실패.'))
+        const result = await searchAnimeVideos(id)
 
-        } else {
-            console.error('MAL 아이디 파라미터 입력안됨.')
-            return res.status(200).send(errMsg('MAL 아이디 파라미터 입력 안됨.'))
+        if (result) {
+            await updateSearchCache(req.originalUrl, result);
+            return res.status(200).send(successAndFetchData('MAL 비디오 검색 성공.', result))
         }
+        return res.status(200).send(errMsg('MAL 비디오 검색 실패.'))
+
     } catch (e) {
         console.error(`MAL search videos 아이디 err: ${e}`)
         return res.status(404).send(errMsg(`${e}`))
@@ -110,16 +99,13 @@ router.get('/person/:id', async (req, res) => {
 
     try {
         const id = req.params.id
-        if (id) {
-            const result = await searchPersonData(id)
-            return result
-                ? res.status(200).send(successAndFetchData('MAL 인물 검색 성공.', result))
-                : res.status(200).send(errMsg('MAL 인물 검색 실패.'))
-
-        } else {
-            console.error('MAL 인물 아이디 파라미터 입력안됨.')
-            return res.status(200).send(errMsg('MAL 인물 아이디 파라미터 입력 안됨.'))
+        const result = await searchPersonData(id)
+        if (result) {
+            await updateSearchCache(req.originalUrl, result);
+            return res.status(200).send(successAndFetchData('MAL 인물 검색 성공.', result))
         }
+        return res.status(200).send(errMsg('MAL 인물 검색 실패.'))
+
     } catch (e) {
         console.error(`MAL search person 아이디 err: ${e}`)
         return res.status(404).send(errMsg(`${e}`))
@@ -132,11 +118,12 @@ router.get('/episode/:id/:page', async (req, res) => {
         const id = req.params.id
         const page = req.params.page || "1"
         if (id) {
-            const result = await searchAnimeEpisodes(id,page)
-            return result
-                ? res.status(200).send(successAndFetchData('MAL episode 검색 성공.', result))
-                : res.status(200).send(errMsg('MAL episode 검색 실패.'))
-
+            const result = await searchAnimeEpisodes(id, page)
+            if (result) {
+                await updateSearchCache(req.originalUrl, result);
+                return res.status(200).send(successAndFetchData('MAL episode 검색 성공.', result))
+            }
+            return res.status(200).send(errMsg('MAL episode 검색 실패.'))
         } else {
             console.error('MAL 아이디 파라미터 입력안됨.')
             return res.status(200).send(errMsg('MAL 아이디 파라미터 입력 안됨.'))
@@ -153,15 +140,13 @@ router.get('/detail/:id/', async (req, res) => {
     try {
         const id = req.params.id
 
-        if (id) {
-            const malSearchResult = await searchAnimeDetailData(id)
-            return malSearchResult
-                ? res.status(200).send(successAndFetchData('MAL 검색 성공.', malSearchResult))
-                : res.status(200).send(errMsg('MAL 검색 실패.'))
-        } else {
-            console.error('MAL 아이디 파라미터 입력안됨.')
-            return res.status(200).send(errMsg('MAL 아이디 파라미터 입력 안됨.'))
+        const malSearchResult = await searchAnimeDetailData(id)
+
+        if (malSearchResult) {
+            await updateSearchCache(req.originalUrl, malSearchResult);
+            return res.status(200).send(successAndFetchData('MAL 검색 성공.', malSearchResult))
         }
+        return res.status(200).send(errMsg('MAL 검색 실패.'))
     } catch (e) {
         console.error(`MAL search 아이디 err: ${e}`)
         return res.status(404).send(errMsg(`${e}`))
@@ -276,11 +261,13 @@ router.get('/all', async (req, res) => {
         const sort = req.query.sort || undefined
         const order_by = req.query.order_by || undefined
 
-        const allResult = await searchAllItems(type, q, page, status, rated, genre, score, startDate, endDate, genre_exclude, limit, sort,order_by);
+        const allResult = await searchAllItems(type, q, page, status, rated, genre, score, startDate, endDate, genre_exclude, limit, sort, order_by);
 
-        return allResult
-            ? res.status(200).send(successAndFetchData('데이터 검색 성공', allResult))
-            : res.status(200).send(errMsg('검색 결과가 없습니다.'));
+        if (allResult) {
+            await updateSearchCache(req.originalUrl, allResult)
+            return res.status(200).send(successAndFetchData('데이터 검색 성공', allResult));
+        }
+        return res.status(200).send(errMsg('검색 결과가 없습니다.'));
 
     } catch (e) {
         console.error(`MAL search All err: ${e}`)
@@ -295,12 +282,12 @@ router.get('/season', async (req, res) => {
     try {
 
         const limit = req.query.limit || 5;
-
         const seasonItems = await searchSeasonItems(limit);
-        return seasonItems
-            ? res.status(200).send(successAndFetchData('시즌리스트 검색 성공 ', seasonItems))
-            : res.status(200).send(errMsg('시즌리스트 검색 결과가 없습니다. '))
-
+        if (seasonItems) {
+            await updateSearchCache(req.originalUrl, searchAllItems)
+            return res.status(200).send(successAndFetchData('시즌리스트 검색 성공 ', seasonItems))
+        }
+        return res.status(200).send(errMsg('시즌리스트 검색 결과가 없습니다. '))
     } catch (e) {
         console.error(`Season Item 검색 실패 ${e}`)
         return res.status(404).send(errMsg(`Season Item 검색 에러 ${e}`));
@@ -324,9 +311,11 @@ router.get('/schedule/:day', async (req, res) => {
 
         const scheduleItem = await searchScheduleItems(day);
 
-        return scheduleItem
-            ? res.status(200).send(successAndFetchData('스케쥴 검색 성공', scheduleItem))
-            : res.status(200).send(errMsg('스케쥴 검색 결과가 없습니다.'));
+        if (scheduleItem) {
+            await updateSearchCache(req.originalUrl, scheduleItem)
+            return res.status(200).send(successAndFetchData('스케쥴 검색 성공', scheduleItem))
+        }
+        return res.status(200).send(errMsg('스케쥴 검색 결과가 없습니다.'));
 
     } catch (e) {
         console.error(`schedule Item 검색 실패 ${e}`)
@@ -344,9 +333,11 @@ router.get('/genre/:type/:id/:page', async (req, res) => {
 
         const genreItems = await searchGenreItems(type, id, page);
 
-        return genreItems
-            ? res.status(200).send(successAndFetchData('장르 검색 성공', genreItems))
-            : res.status(200).send(errMsg('장르 검색 실패'));
+        if (genreItems) {
+            await updateSearchCache(req.originalUrl, genreItems)
+            return res.status(200).send(successAndFetchData('장르 검색 성공', genreItems))
+        }
+        return res.status(200).send(errMsg('장르 검색 실패'));
     } catch (e) {
         console.error(`genre Item 검색 에러 ${e}`)
         return res.status(404).send(errMsg(`genre Item 검색 에러 ${e}`));
@@ -363,9 +354,13 @@ router.get('/ranking/:type/:page/:rank_type/:limit', async (req, res) => {
         const limit = req.params.limit || '30'
 
         const malSearchResult = await searchAnimeAllRankingItems(type, page, rank_type, limit)
-        return malSearchResult
-            ? res.status(200).send(successAndFetchData('MAL 랭킹 검색 성공.', malSearchResult))
-            : res.status(200).send(errMsg('MAL 랭킹 검색 실패.'))
+
+        if (malSearchResult) {
+            await updateSearchCache(req.originalUrl, malSearchResult)
+            return res.status(200).send(successAndFetchData('MAL 랭킹 검색 성공.', malSearchResult))
+        }
+        return res.status(200).send(errMsg('MAL 랭킹 검색 실패.'))
+
     } catch (e) {
         console.error(`MAL Search Ranking err: ${e}`)
         return res.status(404).send(errMsg(`${e}`))

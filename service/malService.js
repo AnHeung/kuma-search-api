@@ -5,6 +5,7 @@ const { malSearchPersonParsing , malAllParsing, malSearchParsing, malSeasonParsi
     malSearchJikanDetailParsing, malSearchDetailParsing,malSearchCharacterParsing, malSearchRankingParsing,malSearchEpisodeParsing, malSearchVideoParsing,malScheduleParsing, malGenreParsing } = require('../util/parsing');
 const { getSeasonText, getYear, getScheduleText, getToday, getFourYearData } = require('../util/utils');
 const { updateMalConfig} = require('../util/file_utils');
+const { updateSearchCache } = require('../service/apiService')
 
 const searchAnimeItems = async (q, limit) => {
 
@@ -294,11 +295,11 @@ const searchJikanAnimeDetailData = async (id) => {
 }
 
 
-const searchCharacterPicture = async(character_id)=>{
+const searchCharacterPicture = async(characterId)=>{
     
     const type = "character"
 
-    return await Axios.get(`${MAL_JIKAN_URL}/${type}/${character_id}/pictures`)
+    return await Axios.get(`${MAL_JIKAN_URL}/${type}/${characterId}/pictures`)
         .then(data=>{
             const pictures = data.data.pictures
             if(!pictures || pictures && pictures.length === 0) return false
@@ -310,11 +311,11 @@ const searchCharacterPicture = async(character_id)=>{
         })
 }
 
-const searchPersonData = async(person_id)=>{
+const searchPersonData = async(personId)=>{
     
     const type = "person"
 
-    return await Axios.get(`${MAL_JIKAN_URL}/${type}/${person_id}`)
+    return await Axios.get(`${MAL_JIKAN_URL}/${type}/${personId}`)
         .then(data=>{
             const personData = data.data
             if(!personData) return false
@@ -368,7 +369,7 @@ const searchAnimeCharcters = async(id)=>{
             return malSearchCharacterParsing(characters)
         })
         .catch(e=>{
-            console.error(`searchAnimeVideos error : ${e}`)
+            console.error(`searchAnimeCharcters error : ${e}`)
             return false
         })
 }
@@ -387,7 +388,7 @@ const searchAnimeCharcterDetail = async(id)=>{
             return result
         })
         .catch(e=>{
-            console.error(`searchAnimeVideos error : ${e}`)
+            console.error(`searchAnimeCharcterDetail error : ${e}`)
             return false
         })
 }
@@ -456,7 +457,6 @@ const getMalHeaders = async () => {
     return { 'Authorization': `Bearer ${await MAL_ACCESS_TOKEN()}` };
 }
 
-
 module.exports = {
     searchAnimeItems: searchAnimeItems,
     searchAnimeDetailData: searchAnimeDetailData,
@@ -473,5 +473,5 @@ module.exports = {
     searchAnimeCharcters:searchAnimeCharcters,
     searchAnimeEpisodes:searchAnimeEpisodes,
     searchAllItems: searchAllItems,
-    getGenreList: getGenreList
+    getGenreList: getGenreList,
 }

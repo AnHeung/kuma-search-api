@@ -179,6 +179,5 @@ module.exports = {
     getToday: getToday,
     appendImageText: appendImageText,
     getFourYearData: getFourYearData,
-    dateToFormat: dateToFormat
+    dateToFormat: dateToFormat,
 }
-
