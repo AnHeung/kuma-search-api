@@ -145,6 +145,13 @@ const getFourYearData = () => {
     })
 }
 
+const isTwoDayPassed= (date) =>{
+    const updateDate = moment(dateToFormat(date))
+    const today = moment(getToday())
+    const passDays = moment.duration(today.diff(updateDate)).asDays()
+    return passDays > 1
+}
+
 const appendImageText = (image_url) => {
     let image = ""
 
@@ -180,4 +187,5 @@ module.exports = {
     appendImageText: appendImageText,
     getFourYearData: getFourYearData,
     dateToFormat: dateToFormat,
+    isTwoDayPassed:isTwoDayPassed
 }

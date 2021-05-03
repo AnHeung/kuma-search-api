@@ -1,5 +1,6 @@
 const Axios = require('axios');
 const { API_SERVER_CACHE_URL } = require('../appConstants');
+const { isTwoDayPassed } = require('../util/utils');
 
 const updateSearchCache = async (key, data) => {
 
@@ -21,12 +22,13 @@ const getSearchCache = async (key) => {
         }
     })
         .then(result => {
-            if(result.data.err) return false;
+            const err = result.data.err
+            if(err || isTwoDayPassed(result.data.data.updatedAt)) return false;
             return result.data.data
         })
         .catch(e => {
             console.error(`getSearchCache err : ${e}`)
-            return false
+          return false
         })
 }
 

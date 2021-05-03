@@ -8,8 +8,6 @@ const { cleanText, malTypeToKorea, appendImageText, dateToFormat } = require('..
 const MalSearchScheduleItem = require('../model/MalSearchScheduleItem');
 const MalSearchGenreItem = require('../model/MalSearchGenreItem');
 const MalSearchAllItem = require('../model/MalSearchAllItem');
-const { lang } = require('moment')
-
 
 const googleSearchParsing = (searchObj, limit) => {
     const searchItems = searchObj['items']
