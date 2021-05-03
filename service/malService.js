@@ -429,12 +429,16 @@ const searchLastEpisodes = async (id) => {
 
     if (episodesItems) {
         const lastPage = episodesItems.episodes_last_page
-        if (!lastPage || episodes.length === 0) return false
         const episodes = episodesItems.episodes
-        if (lastPage === 1) return malSearchLastEpisodeParsing(episodes)
-        
+        if (!lastPage || episodes.length === 0) return false
+
+        if (lastPage === 1) {
+            const episodes = episodesItems.episodes
+            return malSearchLastEpisodeParsing(episodes)
+        }
+
         const lastEpisodeItems = await searchAnimeEpisodes(id, lastPage);
-        if(!lastEpisodeItems) return false
+        if (!lastEpisodeItems) return false
         const lastPageEpisodes = lastEpisodeItems.episodes
         return malSearchLastEpisodeParsing(lastPageEpisodes)
     }
@@ -491,7 +495,7 @@ module.exports = {
     searchAnimeCharcterDetail: searchAnimeCharcterDetail,
     searchAnimeCharcters: searchAnimeCharcters,
     searchAnimeEpisodes: searchAnimeEpisodes,
-    searchLastEpisodes:searchLastEpisodes,
+    searchLastEpisodes: searchLastEpisodes,
     searchAllItems: searchAllItems,
     getGenreList: getGenreList,
 }
