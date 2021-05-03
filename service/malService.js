@@ -429,7 +429,7 @@ const searchLastEpisodes = async (id) => {
 
     if (episodesItems) {
         const lastPage = episodesItems.episodes_last_page
-        if (!lastPage) return false
+        if (!lastPage || episodes.length === 0) return false
         const episodes = episodesItems.episodes
         if (lastPage === 1) return malSearchLastEpisodeParsing(episodes)
         
