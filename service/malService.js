@@ -1,10 +1,10 @@
 const Axios = require('axios');
 const { MAL_ACCESS_TOKEN, MAL_AUTH_URL, MAL_CLIENT_ID, MAL_CLIENT_SECRET, MAL_BASE_URL, MAL_JIKAN_URL, MAL_REFRESH_TOKEN } = require('../appConstants');
 
-const { malSearchPersonParsing , malAllParsing, malSearchParsing, malSeasonParsing, malJikanSeasonParsing,malSearchCharacterPictureParsing,malSearchCharacterDetailParsing,
-    malSearchJikanDetailParsing, malSearchDetailParsing,malSearchCharacterParsing, malSearchRankingParsing,malSearchEpisodeParsing, malSearchVideoParsing,malScheduleParsing, malGenreParsing } = require('../util/parsing');
-const { getSeasonText, getYear, getScheduleText, getToday, getFourYearData } = require('../util/utils');
-const { updateMalConfig} = require('../util/file_utils');
+const { malSearchPersonParsing, malAllParsing, malSearchParsing, malSeasonParsing, malJikanSeasonParsing, malSearchCharacterPictureParsing, malSearchCharacterDetailParsing,
+    malSearchJikanDetailParsing, malSearchDetailParsing, malSearchCharacterParsing, malSearchLastEpisodeParsing, malSearchRankingParsing, malSearchEpisodeParsing, malSearchVideoParsing, malScheduleParsing, malGenreParsing } = require('../util/parsing');
+const { getSeasonText, getYear, getScheduleText, getFourYearData } = require('../util/utils');
+const { updateMalConfig } = require('../util/file_utils');
 const { updateSearchCache } = require('../service/apiService')
 
 const searchAnimeItems = async (q, limit) => {
@@ -25,7 +25,7 @@ const searchAnimeItems = async (q, limit) => {
             if (!malItems || malItems && malItems.length === 0) return false
             return malSearchParsing(malItems)
         })
-        .catch(catchErr("searchAnimeItems",()=>searchAnimeItems(q,limit)))
+        .catch(catchErr("searchAnimeItems", () => searchAnimeItems(q, limit)))
 }
 
 const searchAllItems = async (type, q, page, status, rated, genre, score, start_date, end_date, genre_exclude, limit, sort, order_by) => {
@@ -166,7 +166,7 @@ const searchSeasonItems = async (limit) => {
     const season = getSeasonText();
     const year = getYear();
     const sort = "anime_num_list_users"
-    const params = { limit ,sort}
+    const params = { limit, sort }
 
     const headers = await getMalHeaders()
 
@@ -179,7 +179,7 @@ const searchSeasonItems = async (limit) => {
             if (!malSeasonItems || malSeasonItems && malSeasonItems.length === 0) return false
             return malSeasonParsing(malSeasonItems)
         })
-        .catch(catchErr("searchSeasonItems" , ()=>searchSeasonItems(limit)))
+        .catch(catchErr("searchSeasonItems", () => searchSeasonItems(limit)))
 }
 
 const searchJikanSeasonItems = async (limit) => {
@@ -295,33 +295,33 @@ const searchJikanAnimeDetailData = async (id) => {
 }
 
 
-const searchCharacterPicture = async(characterId)=>{
-    
+const searchCharacterPicture = async (characterId) => {
+
     const type = "character"
 
     return await Axios.get(`${MAL_JIKAN_URL}/${type}/${characterId}/pictures`)
-        .then(data=>{
+        .then(data => {
             const pictures = data.data.pictures
-            if(!pictures || pictures && pictures.length === 0) return false
+            if (!pictures || pictures && pictures.length === 0) return false
             return malSearchCharacterPictureParsing(pictures)
         })
-        .catch(e=>{
+        .catch(e => {
             console.error(`searchCharacterPicture error : ${e}`)
             return false
         })
 }
 
-const searchPersonData = async(personId)=>{
-    
+const searchPersonData = async (personId) => {
+
     const type = "person"
 
     return await Axios.get(`${MAL_JIKAN_URL}/${type}/${personId}`)
-        .then(data=>{
+        .then(data => {
             const personData = data.data
-            if(!personData) return false
+            if (!personData) return false
             return malSearchPersonParsing(personData)
         })
-        .catch(e=>{
+        .catch(e => {
             console.error(`searchPersonData error : ${e}`)
             return false
         })
@@ -345,88 +345,107 @@ const searchAnimeDetailData = async (id) => {
             if (!malItems || malItems && malItems.length === 0) return false
             return await malSearchDetailParsing(malItems);
         })
-        .then(async (result)=>{
+        .then(async (result) => {
             const videos = await searchAnimeVideos(id)
-            if(videos)result.videos = videos;
+            if (videos) result.videos = videos;
             return result
         })
-        .then(async (result)=>{
+        .then(async (result) => {
             const characters = await searchAnimeCharcters(id)
-            if(characters)result.characters = characters.splice(0,10);
+            if (characters) result.characters = characters.splice(0, 10);
             return result
         })
-        .catch(catchErr("searchAnimeDetailData", ()=>searchAnimeDetailData(id)))
+        .catch(catchErr("searchAnimeDetailData", () => searchAnimeDetailData(id)))
 }
 
-const searchAnimeCharcters = async(id)=>{
+const searchAnimeCharcters = async (id) => {
 
     const type = "anime"
 
     return await Axios.get(`${MAL_JIKAN_URL}/${type}/${id}/characters_staff`)
-        .then(data=>{
+        .then(data => {
             const characters = data.data.characters
-            if(!characters || characters && characters.length === 0) return false
+            if (!characters || characters && characters.length === 0) return false
             return malSearchCharacterParsing(characters)
         })
-        .catch(e=>{
+        .catch(e => {
             console.error(`searchAnimeCharcters error : ${e}`)
             return false
         })
 }
 
-const searchAnimeCharcterDetail = async(id)=>{
+const searchAnimeCharcterDetail = async (id) => {
 
     return await Axios.get(`${MAL_JIKAN_URL}/character/${id}`)
-        .then(data=>{
+        .then(data => {
             const character_info = data.data
-            if(!character_info) return character_info
+            if (!character_info) return character_info
             return malSearchCharacterDetailParsing(character_info)
         })
-        .then(async result=>{
-            const pictures =  await searchCharacterPicture(id)
-            if(pictures && pictures.length > 0) result.pictures = pictures
+        .then(async result => {
+            const pictures = await searchCharacterPicture(id)
+            if (pictures && pictures.length > 0) result.pictures = pictures
             return result
         })
-        .catch(e=>{
+        .catch(e => {
             console.error(`searchAnimeCharcterDetail error : ${e}`)
             return false
         })
 }
 
-const searchAnimeVideos = async (id)=>{
+const searchAnimeVideos = async (id) => {
     const type = "anime"
 
     return await Axios.get(`${MAL_JIKAN_URL}/${type}/${id}/videos`)
-        .then(data=>{
+        .then(data => {
             const videoItems = data.data.promo
-            if(!videoItems || videoItems && videoItems.length === 0) return false
+            if (!videoItems || videoItems && videoItems.length === 0) return false
             return malSearchVideoParsing(videoItems)
         })
-        .catch(e=>{
+        .catch(e => {
             console.error(`searchAnimeVideos error : ${e}`)
             return false
         })
 }
 
-const searchAnimeEpisodes = async (id,page)=>{
+const searchAnimeEpisodes = async (id, page) => {
     const type = "anime"
 
     return await Axios.get(`${MAL_JIKAN_URL}/${type}/${id}/episodes/${page}`)
-        .then(data=>{
-            const episodeItems = data.data.episodes
-            if(!episodeItems || episodeItems && episodeItems.length === 0) return false
-            return malSearchEpisodeParsing(episodeItems)
+        .then(data => {
+            const episodeItems = data.data
+            if (!episodeItems || episodeItems && episodeItems.length === 0) return false
+            return episodeItems
         })
-        .catch(e=>{
+        .catch(e => {
             console.error(`searchAnimeEpisodes error : ${e}`)
             return false
         })
 }
 
-const catchErr = (msg , callback) => {
+const searchLastEpisodes = async (id) => {
+
+    const episodesItems = await searchAnimeEpisodes(id, "1")
+
+    if (episodesItems) {
+        const lastPage = episodesItems.episodes_last_page
+        if (!lastPage) return false
+        const episodes = episodesItems.episodes
+        if (lastPage === 1) return malSearchLastEpisodeParsing(episodes)
+        
+        const lastEpisodeItems = await searchAnimeEpisodes(id, lastPage);
+        if(!lastEpisodeItems) return false
+        const lastPageEpisodes = lastEpisodeItems.episodes
+        return malSearchLastEpisodeParsing(lastPageEpisodes)
+    }
+    return false;
+}
+
+
+const catchErr = (msg, callback) => {
     return async (e) => {
         const status = e.response.status
-            
+
         //401 access_key 만료시 재등록 및 업데이트 로직
         if (status && status === 401) {
             const grant_type = "refresh_token"
@@ -438,15 +457,15 @@ const catchErr = (msg , callback) => {
 
             return await Axios.post(MAL_AUTH_URL, params)
                 .then(async data => {
-                     const result = data.data
-                     if(result)await updateMalConfig({access_token:result.access_token , refresh_token:result.refresh_token})
-                     return await callback();
+                    const result = data.data
+                    if (result) await updateMalConfig({ access_token: result.access_token, refresh_token: result.refresh_token })
+                    return await callback();
                 })
-                .catch(err=>{
+                .catch(err => {
                     console.error(`refresh_mal_token error : ${err}`)
                     return false
-                }) 
-        }else{
+                })
+        } else {
             console.error(`${msg} error : ${e}`)
             return false
         }
@@ -464,14 +483,15 @@ module.exports = {
     searchAnimeRankingItems: searchAnimeRankingItems,
     searchAnimeAllRankingItems: searchAnimeAllRankingItems,
     searchSeasonItems: searchSeasonItems,
-    searchCharacterPicture:searchCharacterPicture,
+    searchCharacterPicture: searchCharacterPicture,
     searchScheduleItems: searchScheduleItems,
-    searchPersonData:searchPersonData,
+    searchPersonData: searchPersonData,
     searchAnimeVideos: searchAnimeVideos,
     searchGenreItems: searchGenreItems,
-    searchAnimeCharcterDetail:searchAnimeCharcterDetail,
-    searchAnimeCharcters:searchAnimeCharcters,
-    searchAnimeEpisodes:searchAnimeEpisodes,
+    searchAnimeCharcterDetail: searchAnimeCharcterDetail,
+    searchAnimeCharcters: searchAnimeCharcters,
+    searchAnimeEpisodes: searchAnimeEpisodes,
+    searchLastEpisodes:searchLastEpisodes,
     searchAllItems: searchAllItems,
     getGenreList: getGenreList,
 }

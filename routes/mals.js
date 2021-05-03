@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { errMsg, successMsg, successAndFetchData } = require('../util/errorHandle');
-const { getGenreList, searchAllItems, searchAnimeVideos, searchAnimeItems, searchJikanAnimeDetailData, searchAnimeCharcters, searchPersonData,
+const { getGenreList, searchAllItems, searchAnimeVideos, searchAnimeItems, searchLastEpisodes, searchAnimeCharcters, searchPersonData,
     searchAnimeDetailData, searchAnimeAllRankingItems, searchSeasonItems, searchAnimeEpisodes, searchCharacterPicture, searchAnimeCharcterDetail,
     searchScheduleItems, searchGenreItems } = require('../service/malService')
 const { updateSearchCache } = require('../service/apiService')
@@ -118,7 +118,9 @@ router.get('/episode/:id/:page', async (req, res) => {
         const id = req.params.id
         const page = req.params.page || "1"
         if (id) {
-            const result = await searchAnimeEpisodes(id, page)
+            let result
+            if (page === 'last') result = await searchLastEpisodes(id)
+            else result = await searchAnimeEpisodes(id, page)
             if (result) {
                 await updateSearchCache(req.originalUrl, result);
                 return res.status(200).send(successAndFetchData('MAL episode 검색 성공.', result))

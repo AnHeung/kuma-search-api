@@ -206,6 +206,11 @@ const malSearchEpisodeParsing = (episodeItems) => {
     })
 }
 
+const malSearchLastEpisodeParsing = (episodeItems) => {
+    const { episode_id, title, image_url, aired, video_url } = episodeItems.slice(-1)[0]
+    return { episode_id:episode_id && episode_id.toString(), title, air_date: dateToFormat(aired), image_url, video_url }
+}
+
 const malSearchDetailParsing = async (searchDetailItem) => {
     try {
         //mean 별점수
@@ -340,6 +345,7 @@ module.exports = {
     malAllParsing: malAllParsing,
     malSearchCharacterPictureParsing: malSearchCharacterPictureParsing,
     malSearchEpisodeParsing: malSearchEpisodeParsing,
+    malSearchLastEpisodeParsing:malSearchLastEpisodeParsing,
     malSearchCharacterParsing: malSearchCharacterParsing,
     malSearchPersonParsing: malSearchPersonParsing,
     malSearchCharacterDetailParsing: malSearchCharacterDetailParsing,
