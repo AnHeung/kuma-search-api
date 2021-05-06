@@ -3,9 +3,8 @@ const { MAL_ACCESS_TOKEN, MAL_AUTH_URL, MAL_CLIENT_ID, MAL_CLIENT_SECRET, MAL_BA
 
 const { malSearchPersonParsing, malAllParsing, malSearchParsing, malSeasonParsing, malJikanSeasonParsing, malSearchCharacterPictureParsing, malSearchCharacterDetailParsing,
     malSearchJikanDetailParsing, malSearchDetailParsing, malSearchCharacterParsing, malSearchLastEpisodeParsing, malSearchRankingParsing, malSearchEpisodeParsing, malSearchVideoParsing, malScheduleParsing, malGenreParsing } = require('../util/parsing');
-const { getSeasonText, getYear, getScheduleText, getFourYearData } = require('../util/utils');
+const { getSeasonText, getYear, getScheduleText, getFourYearData ,genreList} = require('../util/utils');
 const { updateMalConfig } = require('../util/file_utils');
-const { updateSearchCache } = require('../service/apiService')
 
 const searchAnimeItems = async (q, limit) => {
 
@@ -16,7 +15,7 @@ const searchAnimeItems = async (q, limit) => {
     const params = { q, limit }
     const headers = await getMalHeaders();
 
-    return await Axios.get(MAL_BASE_URL, {
+    return Axios.get(MAL_BASE_URL, {
         params,
         headers
     })
@@ -76,7 +75,7 @@ const searchAllItems = async (type, q, page, status, rated, genre, score, start_
 
 const searchAnimeRankingItems = async (type, page, ranking_type, limit) => {
 
-    return await Axios.get(`${MAL_JIKAN_URL}/top/${type}/${page}/${ranking_type}`)
+    return Axios.get(`${MAL_JIKAN_URL}/top/${type}/${page}/${ranking_type}`)
         .then(data => {
             const malRankingItems = data.data.top
             console.log(`ranking_type : ${ranking_type} , data : ${data.data.top.length}`)
@@ -205,47 +204,7 @@ const getGenreList = () => {
         {
             type: "GENRE",
             typeKorea: "장르",
-            genre_result: [
-                { category: "액션", categoryValue: "1" },
-                { category: "어드벤쳐", categoryValue: "2" },
-                { category: "자동차", categoryValue: "3" },
-                { category: "코미디", categoryValue: "4" },
-                { category: "Dementia", categoryValue: "5" },
-                { category: "악마", categoryValue: "6" },
-                { category: "미스테리", categoryValue: "7" },
-                { category: "드라마", categoryValue: "8" },
-                { category: "변태", categoryValue: "9" },
-                { category: "판타지", categoryValue: "10" },
-                { category: "게임", categoryValue: "11" },
-                { category: "HENTAI", categoryValue: "12" },
-                { category: "역사", categoryValue: "13" },
-                { category: "호러", categoryValue: "14" },
-                { category: "아동용", categoryValue: "15" },
-                { category: "마법", categoryValue: "16" },
-                { category: "격투기", categoryValue: "17" },
-                { category: "메카", categoryValue: "18" },
-                { category: "음악", categoryValue: "19" },
-                { category: "패러디", categoryValue: "20" },
-                { category: "사무라이", categoryValue: "21" },
-                { category: "로맨스", categoryValue: "22" },
-                { category: "학교", categoryValue: "23" },
-                { category: "공상과학", categoryValue: "24" },
-                { category: "우주", categoryValue: "29" },
-                { category: "스포츠", categoryValue: "30" },
-                { category: "초인물", categoryValue: "31" },
-                { category: "뱀파이어", categoryValue: "32" },
-                { category: "야오이", categoryValue: "33" },
-                { category: "YURI", categoryValue: "34" },
-                { category: "하렘", categoryValue: "35" },
-                { category: "일상물", categoryValue: "36" },
-                { category: "초능력", categoryValue: "37" },
-                { category: "밀리터리", categoryValue: "38" },
-                { category: "경찰", categoryValue: "39" },
-                { category: "심리물", categoryValue: "40" },
-                { category: "스릴러", categoryValue: "41" },
-                { category: "동인", categoryValue: "43" },
-            ]
-
+            genre_result: genreList
         },
         {
             type: "YEAR",
@@ -357,10 +316,10 @@ const searchAnimeDetailData = async (id) => {
         params,
         headers
     })
-        .then(async (data) => {
+        .then(data => {
             const malItems = data.data
             if (!malItems || malItems && malItems.length === 0) return false
-            return await malSearchDetailParsing(malItems);
+            return malSearchDetailParsing(malItems);
         })
         .then(async (result) => {
             const videos = await searchAnimeVideos(id)
@@ -379,7 +338,7 @@ const searchAnimeCharcters = async (id) => {
 
     const type = "anime"
 
-    return await Axios.get(`${MAL_JIKAN_URL}/${type}/${id}/characters_staff`)
+    return Axios.get(`${MAL_JIKAN_URL}/${type}/${id}/characters_staff`)
         .then(data => {
             const characters = data.data.characters
             if (!characters || characters && characters.length === 0) return false
@@ -393,7 +352,7 @@ const searchAnimeCharcters = async (id) => {
 
 const searchAnimeCharcterDetail = async (id) => {
 
-    return await Axios.get(`${MAL_JIKAN_URL}/character/${id}`)
+    return Axios.get(`${MAL_JIKAN_URL}/character/${id}`)
         .then(data => {
             const character_info = data.data
             if (!character_info) return character_info
@@ -413,7 +372,7 @@ const searchAnimeCharcterDetail = async (id) => {
 const searchAnimeVideos = async (id) => {
     const type = "anime"
 
-    return await Axios.get(`${MAL_JIKAN_URL}/${type}/${id}/videos`)
+    return Axios.get(`${MAL_JIKAN_URL}/${type}/${id}/videos`)
         .then(data => {
             const videoItems = data.data.promo
             if (!videoItems || videoItems && videoItems.length === 0) return false
@@ -428,7 +387,7 @@ const searchAnimeVideos = async (id) => {
 const searchAnimeEpisodes = async (id, page) => {
     const type = "anime"
 
-    return await Axios.get(`${MAL_JIKAN_URL}/${type}/${id}/episodes/${page}`)
+    return Axios.get(`${MAL_JIKAN_URL}/${type}/${id}/episodes/${page}`)
         .then(data => {
             const episodeItems = data.data
             if (!episodeItems || episodeItems && episodeItems.length === 0) return false

@@ -4,7 +4,7 @@ const MalSearchDetailItem = require('../model/MalSearchDetailItem')
 const MalSearchCharacterDetailItem = require('../model/MalSearchCharacterDetailItem')
 const MalSearchPersonItem = require('../model/MalSearchPersonItem')
 const MalSearchRankingItem = require('../model/MalSearchRankingItem');
-const { cleanText, malTypeToKorea, appendImageText, dateToFormat } = require('../util/utils');
+const { cleanText, malTypeToKorea, appendImageText, dateToFormat ,genreEnglishToKorea} = require('../util/utils');
 const MalSearchScheduleItem = require('../model/MalSearchScheduleItem');
 const MalSearchGenreItem = require('../model/MalSearchGenreItem');
 const MalSearchAllItem = require('../model/MalSearchAllItem');
@@ -224,8 +224,10 @@ const malSearchDetailParsing = async (searchDetailItem) => {
         const pictureArr = pictures ? pictures.map(img => img.large) : []
         const image = main_picture && main_picture.large
 
-        const genreArr = genres.map(({ id, name }) => {
-            return { id: id && id.toString(), name }
+        const genreArr = genres.map(({ id, name}) => {
+            const genreId = id && id.toString();
+            const genreName = genreEnglishToKorea(genreId) || name
+            return { id: genreId, name: genreName}
         })
         const relatedAnimeArr = related_anime.map(({ node: { id, title, main_picture } }) => {
             const image = main_picture && main_picture.large
