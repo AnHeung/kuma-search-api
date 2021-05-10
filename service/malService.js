@@ -328,7 +328,7 @@ const searchAnimeDetailData = async (id) => {
         })
         .then(async (result) => {
             const characters = await searchAnimeCharcters(id)
-            if (characters) result.characters = characters.splice(0, 10);
+            if (characters) result.characters = characters;
             return result
         })
         .catch(catchErr("searchAnimeDetailData", () => searchAnimeDetailData(id)))
