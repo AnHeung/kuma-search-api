@@ -4,7 +4,7 @@ const MalSearchDetailItem = require('../model/MalSearchDetailItem')
 const MalSearchCharacterDetailItem = require('../model/MalSearchCharacterDetailItem')
 const MalSearchPersonItem = require('../model/MalSearchPersonItem')
 const MalSearchRankingItem = require('../model/MalSearchRankingItem');
-const { cleanText, malTypeToKorea, appendImageText, dateToFormat ,genreEnglishToKorea} = require('../util/utils');
+const { cleanText, malTypeToKorea, appendImageText, dateToFormat, genreEnglishToKorea } = require('../util/utils');
 const MalSearchScheduleItem = require('../model/MalSearchScheduleItem');
 const MalSearchGenreItem = require('../model/MalSearchGenreItem');
 const MalSearchAllItem = require('../model/MalSearchAllItem');
@@ -182,13 +182,13 @@ const malSearchPersonParsing = ({ mal_id, name, alternate_names, about, family_n
         const hasAnime = acc.find(data => {
             return data.anime.mal_id === anime.mal_id.toString()
         })
-        
-        const hasCharacter = acc.find(data =>{
+
+        const hasCharacter = acc.find(data => {
             return data.character.character_id === character.mal_id.toString()
         })
 
-        if (acc.length === 0 || !hasAnime && !hasCharacter){
-            acc.push({ role, anime: { mal_id: anime.mal_id && anime.mal_id.toString(), url:anime.url, image_url:anime.image_url, name:anime.name }, character: { character_id: character.mal_id && character.mal_id.toString(), url: character.url, image_url: character.image_url, name: character.name } })
+        if (acc.length === 0 || !hasAnime && !hasCharacter) {
+            acc.push({ role, anime: { mal_id: anime.mal_id && anime.mal_id.toString(), url: anime.url, image_url: anime.image_url, name: anime.name }, character: { character_id: character.mal_id && character.mal_id.toString(), url: character.url, image_url: character.image_url, name: character.name } })
         }
         return acc;
     }, [])
@@ -208,13 +208,13 @@ const malSearchEpisodeParsing = (episodeItems) => {
 
 const malSearchLastEpisodeParsing = (episodeItems) => {
     const { episode_id, title, image_url, aired, video_url } = episodeItems.slice(-1)[0]
-    return { episode_id:episode_id && episode_id.toString(), title, air_date: dateToFormat(aired), image_url, video_url }
+    return { episode_id: episode_id && episode_id.toString(), title, air_date: dateToFormat(aired), image_url, video_url }
 }
 
 const malSearchDetailParsing = async (searchDetailItem) => {
     try {
         //mean 별점수
-        const { id, title, main_picture, pictures, start_date, end_date, mean, popularity, rank, synopsis
+        const { id, title, alternative_titles, main_picture, pictures, start_date, end_date, mean, popularity, rank, synopsis
             , status, genres, start_season, num_episodes, related_anime, recommendations, studios } = searchDetailItem
         const mal_id = id ? id.toString() : "0"
         const score = rank ? rank.toString() : "0"
@@ -223,11 +223,14 @@ const malSearchDetailParsing = async (searchDetailItem) => {
         const episodes = num_episodes ? num_episodes.toString() : "0"
         const pictureArr = pictures ? pictures.map(img => img.large) : []
         const image = main_picture && main_picture.large
+        const title_en = alternative_titles.en
+            ? alternative_titles.en
+            : (alternative_titles.synonyms.length > 0 ? alternative_titles.synonyms[0] : title)
 
-        const genreArr = genres.map(({ id, name}) => {
+        const genreArr = genres.map(({ id, name }) => {
             const genreId = id && id.toString();
             const genreName = genreEnglishToKorea(genreId) || name
-            return { id: genreId, name: genreName}
+            return { id: genreId, name: genreName }
         })
         const relatedAnimeArr = related_anime.map(({ node: { id, title, main_picture } }) => {
             const image = main_picture && main_picture.large
@@ -248,7 +251,7 @@ const malSearchDetailParsing = async (searchDetailItem) => {
         const { translateText } = require('../service/translateService')
         const koreaSynopsis = await translateText('ko', cleanText(synopsis)) || cleanText(synopsis)
 
-        return new MalSearchDetailItem(mal_id, title, image, start_date, end_date, star,
+        return new MalSearchDetailItem(mal_id, title, title_en, image, start_date, end_date, star,
             popularity.toString(), score, koreaSynopsis, status, genreArr, episodes, startSeason, pictureArr, relatedAnimeArr, recommendationsArr, studioArr)
     } catch (err) {
         console.log(`malSearchDetailParsing err :${err}`)
@@ -347,7 +350,7 @@ module.exports = {
     malAllParsing: malAllParsing,
     malSearchCharacterPictureParsing: malSearchCharacterPictureParsing,
     malSearchEpisodeParsing: malSearchEpisodeParsing,
-    malSearchLastEpisodeParsing:malSearchLastEpisodeParsing,
+    malSearchLastEpisodeParsing: malSearchLastEpisodeParsing,
     malSearchCharacterParsing: malSearchCharacterParsing,
     malSearchPersonParsing: malSearchPersonParsing,
     malSearchCharacterDetailParsing: malSearchCharacterDetailParsing,

@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "debug": "nodemon --inspect api.js",
+    "debug": "nodemon api.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "node api.js",
     "prod": "pm2 deploy prod"
