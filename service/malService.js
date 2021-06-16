@@ -59,7 +59,7 @@ const searchAllItems = async (type, q, page, status, rated, genre, score, start_
             })
     }
 
-    return await genreAxios
+    return genreAxios
         .then(data => {
             const result = data.data.results;
             if (!result || result && result.length === 0) return false
@@ -169,7 +169,7 @@ const searchSeasonItems = async (limit) => {
 
     const headers = await getMalHeaders()
 
-    return await Axios.get(`${MAL_BASE_URL}/season/${year}/${season}`, {
+    return Axios.get(`${MAL_BASE_URL}/season/${year}/${season}`, {
         params,
         headers
     })
@@ -186,7 +186,7 @@ const searchJikanSeasonItems = async (limit) => {
     const season = getSeasonText();
     const year = getYear();
 
-    return await Axios.get(`${MAL_JIKAN_URL}/season/${year}/${season}`)
+    return Axios.get(`${MAL_JIKAN_URL}/season/${year}/${season}`)
         .then(data => {
             const malSeasonItems = data.data.anime
             if (!malSeasonItems || malSeasonItems && malSeasonItems.length === 0) return false
@@ -238,31 +238,15 @@ const getGenreList = () => {
     ];
 }
 
-
-/**
- * 
-/characters_staff	N/A	List of character and staff members
-/episodes	Page number (integer)	List of episodes
-/news	N/A	List of Related news
-/pictures	N/A	List of Related pictures
-/videos	N/A	List of Promotional Videos & episodes (if any)
-/stats	N/A	Related statistical information
-/forum	N/A	List of Related forum topics
-/moreinfo	N/A	A string of more information (if any)
-/reviews	Page number (integer)	List of Reviews written by users
-/recommendations	N/A	List of Recommendations and their weightage made by users
-/userupdates	Page number (integer)	List of the latest list updates made by users
- */
-
 const searchJikanAnimeDetailData = async (id) => {
 
     const type = "anime"
 
-    return await Axios.get(`${MAL_JIKAN_URL}/${type}/${id}`)
+    return Axios.get(`${MAL_JIKAN_URL}/${type}/${id}`)
         .then(async (data) => {
             const malItems = data.data
             if (!malItems || malItems && malItems.length === 0) return false
-            return await malSearchJikanDetailParsing(data.data);
+            return malSearchJikanDetailParsing(data.data);
         })
         .catch(e => {
             console.error(`searchJikanAnimeDetailData err : ${e}`)
@@ -275,7 +259,7 @@ const searchCharacterPicture = async (characterId) => {
 
     const type = "character"
 
-    return await Axios.get(`${MAL_JIKAN_URL}/${type}/${characterId}/pictures`)
+    return Axios.get(`${MAL_JIKAN_URL}/${type}/${characterId}/pictures`)
         .then(data => {
             const pictures = data.data.pictures
             if (!pictures || pictures && pictures.length === 0) return false
@@ -291,7 +275,7 @@ const searchPersonData = async (personId) => {
 
     const type = "person"
 
-    return await Axios.get(`${MAL_JIKAN_URL}/${type}/${personId}`)
+    return Axios.get(`${MAL_JIKAN_URL}/${type}/${personId}`)
         .then(data => {
             const personData = data.data
             if (!personData) return false
@@ -312,7 +296,7 @@ const searchAnimeDetailData = async (id) => {
 
     const headers = await getMalHeaders()
 
-    return await Axios.get(`${MAL_BASE_URL}/${id}`, {
+    return Axios.get(`${MAL_BASE_URL}/${id}`, {
         params,
         headers
     })
@@ -435,7 +419,7 @@ const catchErr = (msg, callback) => {
             params.append('grant_type', grant_type);
             params.append('refresh_token', await MAL_REFRESH_TOKEN());
 
-            return await Axios.post(MAL_AUTH_URL, params)
+            return Axios.post(MAL_AUTH_URL, params)
                 .then(async data => {
                     const result = data.data
                     if (result) await updateMalConfig({ access_token: result.access_token, refresh_token: result.refresh_token })

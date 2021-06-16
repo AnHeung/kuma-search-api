@@ -286,7 +286,7 @@ router.get('/season', async (req, res) => {
         const limit = req.query.limit || 5;
         const seasonItems = await searchSeasonItems(limit);
         if (seasonItems) {
-            await updateSearchCache(req.originalUrl, searchAllItems)
+            await updateSearchCache(req.originalUrl, seasonItems)
             return res.status(200).send(successAndFetchData('시즌리스트 검색 성공 ', seasonItems))
         }
         return res.status(200).send(errMsg('시즌리스트 검색 결과가 없습니다. '))

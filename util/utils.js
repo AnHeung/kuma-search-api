@@ -146,10 +146,15 @@ const getFourYearData = () => {
 }
 
 const isTwoDayPassed = (date) => {
-    const updateDate = moment(dateToFormat(date))
-    const today = moment(getToday())
-    const passDays = moment.duration(today.diff(updateDate)).asDays()
-    return passDays > 1
+    try {
+        const updateDate = moment(dateToFormat(date))
+        const today = moment(getToday())
+        const passDays = moment.duration(today.diff(updateDate)).asDays()
+        return passDays > 1
+    } catch (e) {
+        console.error(`isTwoDayPassed error :${e}`)
+        return false
+    }
 }
 
 const appendImageText = (image_url) => {
