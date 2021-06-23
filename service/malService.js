@@ -202,17 +202,17 @@ const getGenreList = () => {
 
     return [
         {
-            type: "GENRE",
+            type: "Genre",
             typeKorea: "장르",
             genre_result: genreList
         },
         {
-            type: "YEAR",
+            type: "Year",
             typeKorea: "연도",
             genre_result: getFourYearData()
         },
         {
-            type: "AIRING",
+            type: "Airing",
             typeKorea: "방영",
             genre_result: [
                 { category: "방영중", categoryValue: "airing" },
@@ -222,7 +222,7 @@ const getGenreList = () => {
 
         },
         {
-            type: "RATED",
+            type: "Rated",
             typeKorea: "등급",
             genre_result: [
                 { category: "모두", categoryValue: "g" },
