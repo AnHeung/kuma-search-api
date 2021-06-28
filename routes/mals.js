@@ -2,7 +2,7 @@ const router = require('express').Router();
 const { errMsg, successMsg, successAndFetchData } = require('../util/errorHandle');
 const { getGenreList, searchAllItems, searchAnimeVideos, searchAnimeItems, searchLastEpisodes, searchAnimeCharcters, searchPersonData,
     searchAnimeDetailData, searchAnimeAllRankingItems, searchSeasonItems, searchAnimeEpisodes, searchCharacterPicture, searchAnimeCharcterDetail,
-    searchScheduleItems, searchGenreItems } = require('../service/malService')
+    searchScheduleItems, searchGenreItems, searchAnimeAllRankingItemsWait } = require('../service/malService')
 const { updateSearchCache } = require('../service/apiService')
 
 router.get('/data', async (req, res) => {
@@ -355,7 +355,7 @@ router.get('/ranking/:type/:page/:rank_type/:limit', async (req, res) => {
         const rank_type = req.params.rank_type || 'airing,upcomming,movie'
         const limit = req.params.limit || '30'
 
-        const malSearchResult = await searchAnimeAllRankingItems(type, page, rank_type, limit)
+        const malSearchResult = await searchAnimeAllRankingItemsWait(type, page, rank_type, limit)
 
         if (malSearchResult) {
             await updateSearchCache(req.originalUrl, malSearchResult)

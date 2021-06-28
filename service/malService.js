@@ -78,7 +78,6 @@ const searchAnimeRankingItems = async (type, page, ranking_type, limit) => {
     return Axios.get(`${MAL_JIKAN_URL}/top/${type}/${page}/${ranking_type}`)
         .then(data => {
             const malRankingItems = data.data.top
-            console.log(`ranking_type : ${ranking_type} , data : ${data.data.top.length}`)
             if (!malRankingItems || malRankingItems && malRankingItems.length === 0) return false
             return malSearchRankingParsing(malRankingItems, ranking_type, limit)
         })
@@ -94,6 +93,7 @@ const searchAnimeAllRankingItems = async (searchType, page, rankType, limit) => 
     console.log(` typeArr ${typeArr} : rankType :${rankType}`);
 
     return Promise.all(typeArr.map(rankType => {
+        
         return searchAnimeRankingItems(searchType, page, rankType, limit)
     }))
         .then(result => result.filter(data => data))
@@ -108,7 +108,7 @@ const searchAnimeAllRankingItems = async (searchType, page, rankType, limit) => 
 //api 가 호출횟수 제한이 있어서 텀을 두고 호출할떄 사용
 const searchAnimeAllRankingItemsWait = async (searchType, page, rankType, limit) => {
 
-    const typeArr = (!rankType || (rankType && rankType === 'all')) ? ['airing', 'upcoming', 'movie', 'ova'] : rankType.split(',');
+    const typeArr = (!rankType || (rankType && rankType === 'all')) ? ['airing', 'upcoming', 'movie', 'ova','tv'] : rankType.split(',');
     console.log(` typeArr ${typeArr} : rankType :${rankType}`);
     const resultArr = []
 
@@ -452,6 +452,7 @@ module.exports = {
     searchPersonData: searchPersonData,
     searchAnimeVideos: searchAnimeVideos,
     searchGenreItems: searchGenreItems,
+    searchAnimeAllRankingItemsWait:searchAnimeAllRankingItemsWait,
     searchAnimeCharcterDetail: searchAnimeCharcterDetail,
     searchAnimeCharcters: searchAnimeCharcters,
     searchAnimeEpisodes: searchAnimeEpisodes,
