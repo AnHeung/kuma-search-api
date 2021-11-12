@@ -24,7 +24,8 @@ const getSearchCache = async (key) => {
         .then(result => {
             const err = result.data.err
             const date = result.data.updatedAt || getToday();
-            if (err || isTwoDayPassed(date)) return false;
+            // if (err || isTwoDayPassed(date)) return false;
+            if(err) return false
             return result.data.data
         })
         .catch(e => {
