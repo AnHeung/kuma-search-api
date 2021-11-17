@@ -416,6 +416,7 @@ const catchErr = (msg, callback) => {
                 .then(async data => {
                     const result = data.data
                     if (result) await updateMalConfig({ access_token: result.access_token, refresh_token: result.refresh_token })
+                    axios.defaults.headers.common['Authorization'] = `Bearer ${await MAL_ACCESS_TOKEN()}`
                     return await callback();
                 })
                 .catch(err => {
