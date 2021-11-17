@@ -11,7 +11,7 @@ const searchData = async (q, limit) => {
 
     const key = GOOGLE_SEARCH_API_KEY
     const cx = GOOGLE_SEARCH_ENGINE_ID
-    const params = { key, cx, q }
+    const params = { key, cx,  }
 
     return await Axios.get(GOOGLE_SEARCH_BASE_URL, { params })
         .then(data => googleSearchParsing(data.data, limit))

@@ -3,12 +3,7 @@ const { getTvShowTitle } = require('./tmdbService');
 const { translateTextParsing } = require('../util/parsing');
 const qs = require('qs');
 const Axios = require('axios');
-const { NAVER_PAPAGO_CLIENT_ID, NAVER_PAPAGO_CLIENT_SECRET, NAVER_PAPAGO_API_URL, NAVER_PAPAGO_DETECT_API_URL } = require('../appConstants')
-const headers = {
-    'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-    'X-Naver-Client-Id': `${NAVER_PAPAGO_CLIENT_ID}`,
-    'X-Naver-Client-Secret': `${NAVER_PAPAGO_CLIENT_SECRET}`
-}
+const {  NAVER_PAPAGO_API_URL, NAVER_PAPAGO_DETECT_API_URL } = require('../appConstants')
 
 const Japanese = 'ja-JP'
 
@@ -24,7 +19,6 @@ async function translateText (target, text){
     const data = qs.stringify({ source, target, text })
     return await Axios({
         url: NAVER_PAPAGO_API_URL,
-        headers,
         method: 'POST',
         data
     })
@@ -45,7 +39,6 @@ const detectLangType = async (text) => {
 
     return await Axios({
         url: NAVER_PAPAGO_DETECT_API_URL,
-        headers,
         method: 'POST',
         data
     })

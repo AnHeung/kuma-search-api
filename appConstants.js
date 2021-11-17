@@ -4,13 +4,15 @@ require('dotenv-flow').config({
 });
 const { getMalConfig } = require('./util/file_utils');
 
-
 const GOOGLE_SEARCH_API_KEY = process.env.GOOGLE_SEARCH_API_KEY
 const GOOGLE_SEARCH_ENGINE_ID = process.env.GOOGLE_SEARCH_ENGINE_ID
 const GOOGLE_SEARCH_BASE_URL = process.env.GOOGLE_SEARCH_BASE_URL
 const API_SERVER_CACHE_URL = process.env.API_SERVER_CACHE_URL
 const TMDB_BASE_URL = process.env.TMDB_BASE_URL
 const TMDB_API_KEY = process.env.TMDB_API_KEY
+const API_KEY = process.env.API_KEY
+const API_KEY_VALUE = process.env.API_KEY_VALUE
+
 const MAL_ACCESS_TOKEN = async () => {
     const config = await getMalConfig();
     return config.access_token
@@ -49,4 +51,6 @@ module.exports = {
     NAVER_PAPAGO_CLIENT_ID: NAVER_PAPAGO_CLIENT_ID,
     NAVER_PAPAGO_CLIENT_SECRET: NAVER_PAPAGO_CLIENT_SECRET,
     API_SERVER_CACHE_URL: API_SERVER_CACHE_URL,
+    API_KEY_VALUE:API_KEY_VALUE,
+    API_KEY:API_KEY
 }

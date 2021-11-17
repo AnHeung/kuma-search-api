@@ -13,11 +13,9 @@ const searchAnimeItems = async (q, limit) => {
         return false
     }
     const params = { q, limit }
-    const headers = await getMalHeaders();
 
     return Axios.get(MAL_BASE_URL, {
         params,
-        headers
     })
         .then(data => {
             const malItems = data.data.data
@@ -167,11 +165,8 @@ const searchSeasonItems = async (limit) => {
     const sort = "anime_num_list_users"
     const params = { limit, sort }
 
-    const headers = await getMalHeaders()
-
     return Axios.get(`${MAL_BASE_URL}/season/${year}/${season}`, {
         params,
-        headers
     })
         .then(data => {
             const malSeasonItems = data.data.data
@@ -294,11 +289,9 @@ const searchAnimeDetailData = async (id) => {
 
     const params = { fields }
 
-    const headers = await getMalHeaders()
 
     return Axios.get(`${MAL_BASE_URL}/${id}`, {
         params,
-        headers
     })
         .then(data => {
             const malItems = data.data
@@ -434,10 +427,6 @@ const catchErr = (msg, callback) => {
             return false
         }
     }
-}
-
-const getMalHeaders = async () => {
-    return { 'Authorization': `Bearer ${await MAL_ACCESS_TOKEN()}` };
 }
 
 module.exports = {

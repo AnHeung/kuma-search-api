@@ -6,21 +6,19 @@ const updateSearchCache = async (key, data) => {
 
     const params = { key, data }
 
-    return Axios.post(API_SERVER_CACHE_URL, params)
+    return Axios.post(API_SERVER_CACHE_URL, params )
         .then(data)
         .catch(e => {
-            console.error(`insertSearchCache err : ${e}`)
-            return false
+            console.error(`updateSearchCache err : ${e}`)
+            return false    
         })
 }
 
 const getSearchCache = async (key) => {
 
-    return Axios.get(API_SERVER_CACHE_URL, {
-        params: {
-            key
-        }
-    })
+    const params = {key}
+
+    return Axios.get(API_SERVER_CACHE_URL,{params})
         .then(result => {
             const err = result.data.err
             const date = result.data.updatedAt || getToday();

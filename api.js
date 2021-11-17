@@ -1,10 +1,19 @@
+(async()=>{
+
 const path = require('path');
 require('dotenv-flow').config({
     node_env: process.env.NODE_ENV || 'dev',
     silent: true
 });
-const { getSearchCache } = require('./service/apiService')
-const { errMsg, successMsg, successAndFetchData } = require('./util/errorHandle');
+const auth = require('./middleware/auth');
+const cache = require('./middleware/cache');
+
+const axios = require('axios')
+const {API_KEY, API_KEY_VALUE , MAL_ACCESS_TOKEN ,NAVER_PAPAGO_CLIENT_ID, NAVER_PAPAGO_CLIENT_SECRET} = require('./appConstants')
+axios.defaults.headers.common[API_KEY] = API_KEY_VALUE
+axios.defaults.headers.common['Authorization'] = `Bearer ${await MAL_ACCESS_TOKEN()}`
+axios.defaults.headers.common['X-Naver-Client-Id'] = `${NAVER_PAPAGO_CLIENT_ID}`
+axios.defaults.headers.common['X-Naver-Client-Secret'] = `${NAVER_PAPAGO_CLIENT_SECRET}`
 
 const express = require('express')
 const morgan = require('morgan');
@@ -22,27 +31,21 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }))
 app.use(express.json({ limit: '50mb' }))
 
 
-app.use('/google', require('./routes/googles'))
 
-//test
+app.use('/google',auth, require('./routes/googles'))
+
 /**
  * mal api 로 넘기기전 캐시서버로 할지 api태울지 검증하는 미들웨어
  */
-
-app.use('/mal', async (req, res, next) => {
-    try {
-        const baseUrl = req.originalUrl
-        if (baseUrl) {
-            const result = await getSearchCache(baseUrl)
-            if (result) return res.status(200).send(successAndFetchData('MAL Seach Cache 검색 성공.', result))
-            return next()
-        }
-    } catch (e) {
-        console.error(`mal middleWare error : ${e}`)
-        return next()
+app.use('/mal', async(req,res,next)=>{
+    const isAuth = await auth(req,res)
+    if(isAuth){
+        await cache(req,res,next)
     }
 }, require('./routes/mals'))
 app.use('/tmdb', require('./routes/tmdbs'))
 app.use('/translate', require('./routes/translates'))
-
 app.listen(port, () => console.log(`Server listening on port ${port}`))
+
+})()
+
