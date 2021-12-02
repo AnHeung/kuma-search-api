@@ -27,11 +27,11 @@ const searchAnimeItems = async (q, limit) => {
 
 const searchAllItems = async (type, q, page, status, rated, genre, score, start_date, end_date, genre_exclude, limit, sort, order_by) => {
 
-    const params = { q, page, status, rated, genre, score, start_date, end_date, genre_exclude: 1, limit, sort, order_by }
+    const params = { q, page, status, rated, genre, score, start_date, end_date, genre_exclude: 0, limit, sort, order_by }
     const genreAxios = Axios.get(`${MAL_JIKAN_URL}/search/${type}`, { params })
 
     if (genre_exclude) {
-        const genreExcludeParams = { q, page, status, rated, genre: genre_exclude, score, start_date, end_date, genre_exclude: 0 , limit, sort, order_by }
+        const genreExcludeParams = { q, page, status, rated, genre: genre_exclude, score, start_date, end_date, genre_exclude: 1 , limit, sort, order_by }
         const genreExcludeAxios = Axios.get(`${MAL_JIKAN_URL}/search/${type}`, { params: genreExcludeParams })
         return Promise.all([genreAxios,genreExcludeAxios])
             .then(dataResult => {
