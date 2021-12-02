@@ -32,7 +32,8 @@ const searchAllItems = async (type, q, page, status, rated, genre, score, start_
 
     if (genre_exclude) {
         const genreExcludeParams = { q, page, status, rated, genre: genre_exclude, score, start_date, end_date, genre_exclude: "0", limit, sort, order_by }
-        return Promise.all([genreAxios, Axios.get(`${MAL_JIKAN_URL}/search/${type}`, { params: genreExcludeParams })])
+        const genreExcludeAxios = Axios.get(`${MAL_JIKAN_URL}/search/${type}`, { params: genreExcludeParams })
+        return Promise.all([genreAxios,genreExcludeAxios])
             .then(dataResult => {
                 const combinedArr = dataResult.reduce((acc, data) => {
                     const result = data.data.results;
@@ -225,7 +226,7 @@ const getGenreList = () => {
                 { category: "13세이하", categoryValue: "pg13" },
                 { category: "17세이상", categoryValue: "r17" },
                 { category: "성인", categoryValue: "r" },
-                { category: "RX", categoryValue: "rx" },
+                // { category: "RX", categoryValue: "rx" },
             ]
 
         },

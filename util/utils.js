@@ -189,7 +189,7 @@ const genreList = [
     { category: "변태", categoryValue: "9" },
     { category: "판타지", categoryValue: "10" },
     { category: "게임", categoryValue: "11" },
-    { category: "HENTAI", categoryValue: "12" },
+    // { category: "HENTAI", categoryValue: "12" },
     { category: "역사", categoryValue: "13" },
     { category: "호러", categoryValue: "14" },
     { category: "아동용", categoryValue: "15" },

@@ -171,8 +171,8 @@ const malSearchCharacterDetailParsing = ({ url, image_url, member_favorites, mal
 }
 
 const malSearchCharacterPictureParsing = (characterItems) => {
-    return characterItems.map(({ large }) => {
-        return { image: large }
+    return characterItems.map(({ image_url }) => {
+        return { image: image_url }
     })
 }
 
