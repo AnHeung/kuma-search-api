@@ -114,4 +114,4 @@ dist
 .env.*
 ecosystem.config.json
 ecosystem.config.js
-
+.mal_config
