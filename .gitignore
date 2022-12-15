@@ -107,7 +107,7 @@ dist
 .tern-port
 
 #mal config data
-.mal_config.json
+mal_config.json
 
 #환경변수
 .env
